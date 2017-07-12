@@ -15,5 +15,12 @@
   "bugs": {
     "url": "https://github.com/jcote/logos-sensei/issues"
   },
-  "homepage": "https://github.com/jcote/logos-sensei#readme"
+  "homepage": "https://github.com/jcote/logos-sensei#readme",
+  "dependencies": {
+    "async": "^2.5.0",
+    "line-reader": "^0.4.0",
+    "node-wordnet": "^0.1.12",
+    "wndb-with-exceptions": "^3.0.2",
+    "xhr2": "^0.1.4"
+  }
 }
