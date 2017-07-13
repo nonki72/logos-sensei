@@ -4,6 +4,7 @@
   "description": "teacher for logos",
   "main": "index.js",
   "scripts": {
+    "start": "node loader.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -11,7 +12,7 @@
     "url": "git+https://github.com/jcote/logos-sensei.git"
   },
   "author": "Jordan Cote",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/jcote/logos-sensei/issues"
   },
@@ -20,6 +21,8 @@
     "async": "^2.5.0",
     "line-reader": "^0.4.0",
     "node-wordnet": "^0.1.12",
+    "q": "^1.5.0",
+    "service-js": "0.0.1",
     "wndb-with-exceptions": "^3.0.2",
     "xhr2": "^0.1.4"
   }

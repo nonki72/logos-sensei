@@ -13,7 +13,7 @@ class ApiClient {
 		var oReq = new XMLHttpRequest();
 		oReq.open("GET", this.hostname + "/health");
 		oReq.addEventListener("load", (evt) => {
-		  if (this.status != 200) return cb(this.responseText);
+		  if (oReq.status != 200) return cb(oReq.responseText);
 	    return cb(null);
 		});
 		oReq.send();
@@ -23,8 +23,8 @@ class ApiClient {
 		var oReq = new XMLHttpRequest();
 		oReq.open("GET", this.hostname + "/api/function/" + name);
 		oReq.addEventListener("load", (evt) => {
-			if (this.status != 200) return cb(this.responseText);
-			var response = JSON.parse(this.responseText);
+			if (oReq.status != 200) return cb(oReq.responseText);
+			var response = JSON.parse(oReq.responseText);
 			return cb(null, response.freeIdentifier);
 		});
 		oReq.send();
@@ -44,11 +44,11 @@ class ApiClient {
 
 		var oReq = new XMLHttpRequest();
 		oReq.addEventListener("load", (evt) => {
-			if (this.status != 200) return cb(this.responseText);
-			var response = JSON.parse(this.responseText);
+			if (oReq.status != 200) return cb(oReq.responseText);
+			var response = JSON.parse(oReq.responseText);
 			return cb(null, response.storedfunction);
 		});
-		oReq.open("POST", this.hostname + "/api/function/" + name);
+		oReq.open("POST", oReq.hostname + "/api/function/" + name);
 		oReq.send(formData);
 	}
 
@@ -60,11 +60,11 @@ class ApiClient {
 		
 		var oReq = new XMLHttpRequest();
 		oReq.addEventListener("load", (evt) => {
-			if (this.status != 200) return cb(this.responseText);
-			var response = JSON.parse(this.responseText);
+			if (oReq.status != 200) return cb(oReq.responseText);
+			var response = JSON.parse(oReq.responseText);
 			return cb(null, response.association);
 		});
-		oReq.open("POST", this.hostname + "/api/lambda/association");
+		oReq.open("POST", oReq.hostname + "/api/lambda/association");
 		oReq.send(formData);
 	}
 
@@ -75,11 +75,11 @@ class ApiClient {
 		
 		var oReq = new XMLHttpRequest();
 		oReq.addEventListener("load", (evt) => {
-			if (this.status != 200) return cb(this.responseText);
-			var response = JSON.parse(this.responseText);
+			if (oReq.status != 200) return cb(oReq.responseText);
+			var response = JSON.parse(oReq.responseText);
 			return cb(null, response.association);
 		});
-		oReq.open("POST", this.hostname + "/api/lambda/application");
+		oReq.open("POST", oReq.hostname + "/api/lambda/application");
 		oReq.send(formData);
 	}
 
@@ -91,11 +91,11 @@ class ApiClient {
 		
 		var oReq = new XMLHttpRequest();
 		oReq.addEventListener("load", (evt) => {
-			if (this.status != 200) return cb(this.responseText);
-			var response = JSON.parse(this.responseText);
+			if (oReq.status != 200) return cb(oReq.responseText);
+			var response = JSON.parse(oReq.responseText);
 			return cb(null, response.substitution);
 		});
-		oReq.open("POST", this.hostname + "/api/lambda/substitution");
+		oReq.open("POST", oReq.hostname + "/api/lambda/substitution");
 		oReq.send(formData);
 	}
 
@@ -105,11 +105,11 @@ class ApiClient {
 		
 		var oReq = new XMLHttpRequest();
 		oReq.addEventListener("load", (evt) => {
-			if (this.status != 200) return cb(this.responseText);
-			var response = JSON.parse(this.responseText);
+			if (oReq.status != 200) return cb(oReq.responseText);
+			var response = JSON.parse(oReq.responseText);
 			return cb(null, response.freeidentifier);
 		});
-		oReq.open("POST", this.hostname + "/api/lambda/freeidentifier");
+		oReq.open("POST", oReq.hostname + "/api/lambda/freeidentifier");
 		oReq.send(formData);
 	}
 
