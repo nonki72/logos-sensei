@@ -19,7 +19,9 @@
   "homepage": "https://github.com/jcote/logos-sensei#readme",
   "dependencies": {
     "async": "^2.5.0",
+    "form-data": "^2.2.0",
     "line-reader": "^0.4.0",
+    "node-fetch": "^1.7.1",
     "node-wordnet": "^0.1.12",
     "q": "^1.5.0",
     "service-js": "0.0.1",

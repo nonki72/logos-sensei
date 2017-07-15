@@ -21,7 +21,7 @@ Services.register('ApiClient', ApiClientService);
 var WordnetSenseiService = Object.create(Services.Service);
 WordnetSenseiService.onStart = function() {
 	return Services.ready('ApiClient').spread((apiClient) => {
-	  WordnetSenseiService.service = new WordnetSensei.WordnetSensei(apiClient);
+	  WordnetSenseiService.service = new WordnetSensei.WordnetSensei(apiClient.service);
 	});
 }
 WordnetSenseiService.isUsable = function() {

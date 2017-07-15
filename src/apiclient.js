@@ -2,6 +2,8 @@
 
 var XMLHttpRequest = require('xhr2');
 var XMLHttpRequestUpload = XMLHttpRequest.XMLHttpRequestUpload;
+var FormData = require('form-data');
+var fetch = require('node-fetch');
 
 class ApiClient {
 
@@ -9,7 +11,7 @@ class ApiClient {
 		this.hostname = hostname;
 	}
 
-	healthCheck(cb) {
+	healthCheck(none, cb) {
 		var oReq = new XMLHttpRequest();
 		oReq.open("GET", this.hostname + "/health");
 		oReq.addEventListener("load", (evt) => {
@@ -32,24 +34,26 @@ class ApiClient {
 
 	createStoredFunction(name, astid, fn, fntype, fnclass, argnum, argtypes, modules, memoize, testargs, cb) {
 		var formData = new FormData();
-		formData.append("astid", astid);
-		formData.append("fn", fn);
-		formData.append("fntype", fntype);
-		formData.append("fnclass", fnclass);
-		formData.append("argnum", argnum);
-		formData.append("argtypes", argtypes);
-		formData.append("modules", modules);
-		formData.append("memoize", memoize);
-		formData.append("testargs", testargs);
+		if (astid) formData.append("astid", astid);
+		if (fn) formData.append("fn", fn);
+		if (fntype) formData.append("fntype", fntype);
+		if (fnclass) formData.append("fnclass", fnclass);
+		if (argnum != null) formData.append("argnum", argnum);
+		if (argtypes) formData.append("argtypes", JSON.stringify(argtypes));
+		if (modules) formData.append("modules", JSON.stringify(modules));
+		if (memoize != null) formData.append("memoize", memoize);
+		if (testargs) formData.append("testargs", JSON.stringify(testargs));
 
-		var oReq = new XMLHttpRequest();
-		oReq.addEventListener("load", (evt) => {
-			if (oReq.status != 200) return cb(oReq.responseText);
-			var response = JSON.parse(oReq.responseText);
-			return cb(null, response.storedfunction);
-		});
-		oReq.open("POST", oReq.hostname + "/api/function/" + name);
-		oReq.send(formData);
+		fetch(this.hostname + "/api/function/" + name, { method: 'POST', body: formData })
+		    .then(function(res) {
+						if (res.status != 200) throw new Error(res.statusText);
+		        return res.json();
+		    }).then(function(json) {
+		    	console.log("success:"+JSON.stringify(json));
+						return cb(null, json.storedfunction);
+		    }, function(reason) {
+		    	return cb(reason);
+		    });
 	}
 
 	createAssociation(sourceid, destinationid, associativevalue, cb) {
