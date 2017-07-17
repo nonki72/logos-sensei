@@ -22,6 +22,7 @@
     "line-reader": "^0.4.0",
     "node-wordnet": "^0.1.12",
     "q": "^1.5.0",
+    "q-map": "^0.2.0",
     "service-js": "0.0.1",
     "superagent-q": "0.0.3",
     "wndb-with-exceptions": "^3.0.2",
