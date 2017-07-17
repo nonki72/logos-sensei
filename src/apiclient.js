@@ -2,9 +2,8 @@
 
 var XMLHttpRequest = require('xhr2');
 var XMLHttpRequestUpload = XMLHttpRequest.XMLHttpRequestUpload;
-var FormData = require('form-data');
-var fetch = require('node-fetch');
-
+var request = require('superagent-q');
+ 
 class ApiClient {
 
 	constructor(hostname) {
@@ -32,89 +31,107 @@ class ApiClient {
 		oReq.send();
   }
 
-	createStoredFunction(name, astid, fn, fntype, fnclass, argnum, argtypes, modules, memoize, testargs, cb) {
-		var formData = new FormData();
-		if (astid) formData.append("astid", astid);
-		if (fn) formData.append("fn", fn);
-		if (fntype) formData.append("fntype", fntype);
-		if (fnclass) formData.append("fnclass", fnclass);
-		if (argnum != null) formData.append("argnum", argnum);
-		if (argtypes) formData.append("argtypes", JSON.stringify(argtypes));
-		if (modules) formData.append("modules", JSON.stringify(modules));
-		if (memoize != null) formData.append("memoize", memoize);
-		if (testargs) formData.append("testargs", JSON.stringify(testargs));
+	createStoredFunction(name, astid, fn, fntype, fnclass, argnum, argtypes, modules, memoize, testargs) {
+		var data = {
+			astid: astid,
+			fn: fn,
+			fntype: fntype,
+			fnclass: fnclass,
+			argnum: argnum,
+			argtypes: argtypes,
+			modules: modules,
+			memoize: memoize,
+			testargs: testargs
+		};
+		// if (astid) data.append("astid", astid);
+		// if (fn) formData.append("fn", fn);
+		// if (fntype) formData.append("fntype", fntype);
+		// if (fnclass) formData.append("fnclass", fnclass);
+		// if (argnum != null) formData.append("argnum", argnum);
+		// if (argtypes) formData.append("argtypes", JSON.stringify(argtypes));
+		// if (modules) formData.append("modules", JSON.stringify(modules));
+		// if (memoize != null) formData.append("memoize", memoize);
+		// if (testargs) formData.append("testargs", JSON.stringify(testargs));
 
-		fetch(this.hostname + "/api/function/" + name, { method: 'POST', body: formData })
-		    .then(function(res) {
-						if (res.status != 200) throw new Error(res.statusText);
-		        return res.json();
-		    }).then(function(json) {
-		    	console.log("success:"+JSON.stringify(json));
-						return cb(null, json.storedfunction);
-		    }, function(reason) {
-		    	return cb(reason);
-		    });
+		return request.post(this.hostname + "/api/function/" + name)
+		  .send(data).end()
+	    .then(function(res) {
+				if (res.status != 200) throw new Error(res.statusText);
+	      return res.json();
+	    }).then(function(json) {
+	    	console.log("success:"+JSON.stringify(json));
+				return json.storedfunction;
+	    });
 	}
 
-	createAssociation(sourceid, destinationid, associativevalue, cb) {
-		var formData = new FormData();
-		formData.append("sourceid", sourceid);
-		formData.append("destinationid", destinationid);
-		formData.append("associativevalue", associativevalue);
+	createAssociation(sourceid, destinationid, associativevalue) {
+		var data = {
+			sourceid: sourceid,
+			destinationid: destinationid,
+			associativevalue: associativevalue
+		};
+		// formData.append("sourceid", sourceid);
+		// formData.append("destinationid", destinationid);
+		// formData.append("associativevalue", associativevalue);
 		
-		var oReq = new XMLHttpRequest();
-		oReq.addEventListener("load", (evt) => {
-			if (oReq.status != 200) return cb(oReq.responseText);
-			var response = JSON.parse(oReq.responseText);
-			return cb(null, response.association);
-		});
-		oReq.open("POST", oReq.hostname + "/api/lambda/association");
-		oReq.send(formData);
+		return request.post(this.hostname + "/api/function/association")
+		  .send(data).end()
+	    .then(function(res) {
+				if (res.status != 200) throw new Error(res.statusText);
+	      return res.json();
+	    }).then(function(json) {
+	    	console.log("success:"+JSON.stringify(json));
+				return json.storedfunction;
+	    });
 	}
 
-	createApplication(definition1, definition2, cb) {
-		var formData = new FormData();
-		formData.append("definition1", definition1);
-		formData.append("definition2", definition2);
-		
-		var oReq = new XMLHttpRequest();
-		oReq.addEventListener("load", (evt) => {
-			if (oReq.status != 200) return cb(oReq.responseText);
-			var response = JSON.parse(oReq.responseText);
-			return cb(null, response.association);
-		});
-		oReq.open("POST", oReq.hostname + "/api/lambda/application");
-		oReq.send(formData);
+	createApplication(definition1, definition2) {
+		var data = {
+			definition1: definition1,
+			definition2: definition2
+		};
+		// formData.append("definition1", definition1);
+		// formData.append("definition2", definition2);
+
+		return agent.post(this.hostname + "/api/lambda/application", data)
+	    .then(function(res) {
+				if (res.status != 200) throw new Error(res.statusText);
+	      return res.json();
+	    }).then(function(json) {
+	    	console.log("success:"+JSON.stringify(json));
+				return json.storedfunction;
+	    });
 	}
 
-	createSubstitution(type, definition1, definition2, cb) {
+	createSubstitution(type, definition1, definition2) {
 		var formData = new FormData();
 		formData.append("type", type);
 		formData.append("definition1", definition1);
 		formData.append("definition2", definition2);
 		
-		var oReq = new XMLHttpRequest();
-		oReq.addEventListener("load", (evt) => {
-			if (oReq.status != 200) return cb(oReq.responseText);
-			var response = JSON.parse(oReq.responseText);
-			return cb(null, response.substitution);
-		});
-		oReq.open("POST", oReq.hostname + "/api/lambda/substitution");
-		oReq.send(formData);
+		return fetch(this.hostname + "/api/lambda/substitution", { method: 'POST', body: formData })
+	    .then(function(res) {
+				if (res.status != 200) throw new Error(res.statusText);
+	      return res.json();
+	    }).then(function(json) {
+	    	console.log("success:"+JSON.stringify(json));
+				return json.storedfunction;
+	    });
 	}
 
-	createFreeIdentifier(name, cb) {
+	createFreeIdentifier(name) {
 		var formData = new FormData();
 		formData.append("name", name);
 		
-		var oReq = new XMLHttpRequest();
-		oReq.addEventListener("load", (evt) => {
-			if (oReq.status != 200) return cb(oReq.responseText);
-			var response = JSON.parse(oReq.responseText);
-			return cb(null, response.freeidentifier);
-		});
-		oReq.open("POST", oReq.hostname + "/api/lambda/freeidentifier");
-		oReq.send(formData);
+		return fetch(this.hostname + "/api/lambda/freeidentifier", { method: 'POST', body: formData })
+	    .then(function(res) {
+				if (res.status != 200) throw new Error(res.statusText);
+	      return res.json();
+	    }).then(function(json) {
+	    	console.log("success:"+JSON.stringify(json));
+				return json.storedfunction;
+	    });
+
 	}
 
 
