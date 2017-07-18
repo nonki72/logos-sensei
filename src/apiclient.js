@@ -100,8 +100,6 @@ class ApiClient {
 		  .send(data).end()
 	    .then(function(res) {
 				if (!res.ok) throw new Error(res.status);
-	      return res.json();
-	    }).then(function(res) {
 	    //	console.log("success:"+JSON.stringify(res.body));
 				return res.body.substitution;
 	    }, (res)=>{

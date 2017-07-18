@@ -75,7 +75,7 @@ class WordnetSensei {
 				words.push(word);
 				// if (words.length % 200 == 0) deferred.notify(words.length);
 			}).then(() => {
-				console.log("completed reading suffix " + suffix + ", count: " + words.length);
+				console.log("Completed reading suffix " + suffix + ", count: " + words.length);
 				return words;
 			});
 
@@ -85,13 +85,14 @@ class WordnetSensei {
 		  return Q.all(suffixes.map(getWordsPromise))
 		  .then((wordsArrays) => {
 			  var words = [].concat.apply([], wordsArrays);
-			  console.log("completed reading indexes, count: " + words.length);
+			  console.log("Completed reading all indexes, total count: " + words.length);
 			  return words;
 		  })
 		 });
 
 
 		promises = promises
+		  .then((words) => {console.log('Starting Wordnet simple teaaching program...');return Q(words)})
     	.then((words) => {
 
 				var teachPromise = function(obj) {
@@ -112,18 +113,17 @@ console.log(word);
 			    	  .then((freeIdentifierWord) => {
 			    		return self.apiClient.createApplication(self.basicFunctionInstances['synonym set'].id, freeIdentifierWord.id)
 			    		   .then((applicationSynsetWord) => {
-			    	  //   return self.apiClient.createStoredFunction("synset-" + result.synsetOffset, null, result.synsetOffset, 'string', null, 0, null, null, 0, null)
-			    	  //     .then((freeIdentifierSynset) => {
-			    		 //    return self.apiClient.createSubstitution(applicationSynsetWord.id, freeIdentifierSynset.id)
-			    		 //      .then((substiution1) => {
-			    		 //    	// sub: (element $synset) -> word
-			    		 //    	return self.apiClient.createApplication(self.basicFunctionInstances['element'].id, freeIdentifierSynset.id)
-			    		 //    	  .then((applicationElementSynset) => {
-			    		 //    	  return self.apiClient.createSubstitution(applicationElementSynset.id, freeIdentifierWord.id);
-			    		 //    	});
-			    		 //    });
-			    		 //  });
-			    	  // });
+			    	    return self.apiClient.createFreeIdentifier("synset-" + result.synsetOffset)
+			    	      .then((freeIdentifierSynset) => {
+			    		    return self.apiClient.createSubstitution('eta', applicationSynsetWord.id, freeIdentifierSynset.id)
+			    		      .then((substiution1) => {
+			    		    	// sub: (element $synset) -> word
+			    		    	return self.apiClient.createApplication(self.basicFunctionInstances['element'].id, freeIdentifierSynset.id)
+			    		    	  .then((applicationElementSynset) => {
+			    		    	  return self.apiClient.createSubstitution('eta', applicationElementSynset.id, freeIdentifierWord.id);
+			    		    	});
+			    		    });
+			    		  });
 			    		});
 				    }).then(()=>{process.stdout.write('=')});
 			    }));
