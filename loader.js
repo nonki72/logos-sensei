@@ -29,17 +29,35 @@ WordnetSenseiService.isUsable = function() {
 };
 Services.register('WordnetSensei', WordnetSenseiService);
 
+// Native Sensei
+var NativeSenseiService = Object.create(Services.Service);
+NativeSenseiService.onStart = function() {
+	return Services.ready('ApiClient').spread((apiClient) => {
+	  NativeSenseiService.service = new NativenetSensei.NativeSensei(apiClient.service);
+	});
+}
+NativeSenseiService.isUsable = function() {
+  return Services.ready('ApiClient');
+};
+Services.register('WordnetSensei', WordnetSenseiService);
+
 
 // Initialization
 Services.start();
 
 function startUp() {
 	Services.ready('WordnetSensei').spread(function(wordnetSensei) {
-	  wordnetSensei.service.lookupAllWords();
+	  wordnetSensei.service.teach();
 	}, () => {
 		console.log('.');
 		setTimeout(startUp, 500);
 	});
+	// Services.ready('NativeSensei').spread(function(nativeSensei) {
+	//   nativeSensei.service.teach();
+	// }, () => {
+	// 	console.log('.');
+	// 	setTimeout(startUp, 500);
+	// });
 }
 
 startUp();

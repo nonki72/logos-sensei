@@ -20,31 +20,30 @@ class ApiClient {
 		oReq.send();
 	}
 
-  readFreeIdentifier(name, cb) {
-		var oReq = new XMLHttpRequest();
-		oReq.open("GET", this.hostname + "/api/function/" + name);
-		oReq.addEventListener("load", (evt) => {
-			if (oReq.status != 200) return cb(oReq.responseText);
-			var response = JSON.parse(oReq.responseText);
-			return cb(null, response.freeIdentifier);
-		});
-		oReq.send();
+  readFreeIdentifier(name) {
+	  return request.get(this.hostname + "/api/function/" + name)
+	  .end()
+		.then(function(res) {
+			if (!res.ok) throw new Error(res.status);
+			return res.body.freeidentifier;
+    }, (res)=>{
+    	console.log(res.message + " : " + res.response.res.text);
+    });
   }
 
-	createStoredFunction(name, astid, fn, fntype, fnclass, argnum, argtypes, modules, memoize, testargs) {
-		var data = {
-			astid: astid,
-			fn: fn,
-			fntype: fntype,
-			fnclass: fnclass,
-			argnum: argnum,
-			argtypes: argtypes,
-			modules: modules,
-			memoize: memoize,
-			testargs: testargs
-		};
-
-		return request.post(this.hostname + "/api/function/" + name)
+// attributes of 'data':
+      // name
+			// astid
+			// fn
+			// fntype
+			// fnclass
+			// argnum
+			// argtypes
+			// modules
+			// memoize
+			// testargs
+	createStoredFunction(data) {
+		return request.post(this.hostname + "/api/function/" + data.name)
 		  .send(data).end()
 		  .then(function(res) {
 				if (!res.ok) throw new Error(res.status);
@@ -89,6 +88,24 @@ class ApiClient {
 	    	console.log(res.message + " : " + res.response.res.text);
 	    });
 	}
+
+	createAbstraction(name, definition2) {
+		var data = {
+			name: name,
+			definition2: definition2
+		};
+
+		return request.post(this.hostname + "/api/lambda/abstraction")
+		.send(data).end()
+	    .then(function(res) {
+				if (!res.ok) throw new Error(res.status);
+	    	// console.log("success:"+JSON.stringify(res.body));
+				return res.body.abstraction;
+	    }, (res)=>{
+	    	console.log(res.message + " : " + res.response.res.text);
+	    });
+	}
+
 
 	createSubstitution(type, definition1, definition2) {
 		var data = {

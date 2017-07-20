@@ -57,7 +57,7 @@ class WordnetSensei {
 
   // parse through the Wordnet indexes and use the JS Wordnet library API to look up each entry's details
   // add all relevent data to the Diary
-  lookupAllWords() {
+  teach() {
 	  var self = this;
 
   	var promises = Q.fcall(() => {console.log('Establishing basic definitions...')});
@@ -107,7 +107,7 @@ class WordnetSensei {
 		        // console.log(result.synonyms);
 		        // console.log(result.pos);
 		        // console.log(result.gloss);
-console.log(word);
+						process.stdout.write(word+'..');
 		        // sub: (synset $word) -> $synset
 		    		return self.apiClient.createFreeIdentifier(word)
 			    	  .then((freeIdentifierWord) => {
@@ -125,7 +125,7 @@ console.log(word);
 			    		    });
 			    		  });
 			    		});
-				    }).then(()=>{process.stdout.write('=')});
+				    });//.then(()=>{process.stdout.write('=')});
 			    }));
         };
 
@@ -136,9 +136,9 @@ console.log(word);
 		    	  	deferred.resolve(results);
 		    	  });
 		    	  return deferred.promise
-		    	  .then((results) => {console.log(results);return Q({word: word, results: results})})
+		    	  .then((results) => {return Q({word: word, results: results})})
 		    	  .then(teachPromise)
-		    }, 10);
+		    }, 20);
     	});
 
     	promises.done();
