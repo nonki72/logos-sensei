@@ -61,7 +61,7 @@ class ApiClient {
 			associativevalue: associativevalue
 		};
 		
-		return request.post(this.hostname + "/api/function/association")
+		return request.post(this.hostname + "/api/lambda/association")
 		  .send(data).end()
 	    .then(function(res) {
 				if (!res.ok) throw new Error(res.status);

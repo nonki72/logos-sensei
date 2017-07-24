@@ -4,6 +4,7 @@ const Q = require('q');
 const Services = require('service-js');
 const ApiClient = require('./src/apiclient');
 const WordnetSensei = require('./src/sensei/wordnet');
+const NativeSensei = require('./src/sensei/native');
 
 
 // API Client Service
@@ -33,31 +34,31 @@ Services.register('WordnetSensei', WordnetSenseiService);
 var NativeSenseiService = Object.create(Services.Service);
 NativeSenseiService.onStart = function() {
 	return Services.ready('ApiClient').spread((apiClient) => {
-	  NativeSenseiService.service = new NativenetSensei.NativeSensei(apiClient.service);
+	  NativeSenseiService.service = new NativeSensei.NativeSensei(apiClient.service);
 	});
 }
 NativeSenseiService.isUsable = function() {
   return Services.ready('ApiClient');
 };
-Services.register('WordnetSensei', WordnetSenseiService);
+Services.register('NativeSensei', NativeSenseiService);
 
 
 // Initialization
 Services.start();
 
 function startUp() {
-	Services.ready('WordnetSensei').spread(function(wordnetSensei) {
-	  wordnetSensei.service.teach();
-	}, () => {
-		console.log('.');
-		setTimeout(startUp, 500);
-	});
-	// Services.ready('NativeSensei').spread(function(nativeSensei) {
-	//   nativeSensei.service.teach();
+	// Services.ready('WordnetSensei').spread(function(wordnetSensei) {
+	//   wordnetSensei.service.teach();
 	// }, () => {
 	// 	console.log('.');
 	// 	setTimeout(startUp, 500);
 	// });
+	Services.ready('NativeSensei').spread(function(nativeSensei) {
+	  nativeSensei.service.teach();
+	}, () => {
+		console.log('.');
+		setTimeout(startUp, 500);
+	});
 }
 
 startUp();

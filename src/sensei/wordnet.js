@@ -28,16 +28,16 @@ class WordnetSensei {
 
   	// basic functions                   name,          astid,  fn,          fntype,  fnclass, argnum, argtypes, modules, memoize, testargs
   	var basicPromises = [
-  	self.apiClient.createStoredFunction('definition',     null, undefined, 'undefined', 'string', 1, '["string"]', null, 0, null)
+  	self.apiClient.createStoredFunction('definition',     null, undefined, 'identifier', 'string', 1, '["string"]', null, false, null)
   	  .then((freeIdentifier) => { self.basicFunctionInstances['definition'] = freeIdentifier }),
 
-    self.apiClient.createStoredFunction('synonym set',    null, undefined, 'undefined', 'string', 1, '["number"]', null, 0, null)
+    self.apiClient.createStoredFunction('synonym set',    null, undefined, 'identifier', 'string', 1, '["number"]', null, false, null)
   	  .then((freeIdentifier) => { self.basicFunctionInstances['synonym set'] = freeIdentifier }),
 
-  	self.apiClient.createStoredFunction('element',        null, undefined, 'undefined', 'string', 1, '["Array"]',  null, 0, null)
+  	self.apiClient.createStoredFunction('element',        null, undefined, 'identifier', 'string', 1, '["identifier"]',  null, false, null)
   	  .then((freeIdentifier) => { self.basicFunctionInstances['element'] = freeIdentifier }),
 
-  	self.apiClient.createStoredFunction('part of speech', null, undefined, 'undefined', 'string', 1, '["number"]', null, 0, null)
+  	self.apiClient.createStoredFunction('part of speech', null, undefined, 'identifier', 'string', 1, '["number"]', null, false, null)
   	  .then((freeIdentifier) => { self.basicFunctionInstances['part of speech'] = freeIdentifier })
   	];
 
