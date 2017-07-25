@@ -49,19 +49,20 @@ class NativeSensei {
 	  	var data = {
 				name: 'readOrCreateAbstraction',
 				astid: null, 
-				fn: `var defer = Q.defer();
-				     DataLib.readOrCreateAbstraction(CTX.args.name, CTX.args.definition2, (abs) => {
-				     	 if (abs == null) defer.reject();
-				     	 else defer.resolve(abs);
-				     });
-				     defer.promise`, 
+				fn: `
+var defer = Q.defer();
+DataLib.readOrCreateAbstraction(CTX.args.name, CTX.args.definition2, (abs) => {
+  if (abs == null) defer.reject();
+  else defer.resolve(abs);
+});
+defer.promise`, 
 				fntype: 'promise', 
 				fnclass: 'abstraction', 
 				argnum: 2, 
-				argtypes: [["name","string"], ["definition2","number"]], 
-				modules: ['q'], 
+				argtypes: `[["name","string"], ["definition2","number"]]`, 
+				modules: null, 
 				memoize: true, 
-				testargs: ["test", self.testValues.freeIdentifier.id]
+				testargs: ["test", parseInt(self.testValues.freeIdentifier.id)]
 	  	};
 
 	  	return self.apiClient.createStoredFunction(data);
