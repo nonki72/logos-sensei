@@ -54,6 +54,22 @@ class ApiClient {
 	    });
 	}
 
+	createStoredValue(name, type, klass, value) {
+		var data = {
+			name: name,
+			astid: null,
+			fn: value,
+			fntype: type,
+			fnclass: klass,
+			argnum: null,
+			argtypes: null,
+			modules: null,
+			memoize: false,
+			testargs: null
+		};
+		return this.createStoredFunction(data);
+	}
+
 	createAssociation(sourceid, destinationid, associativevalue) {
 		var data = {
 			sourceid: sourceid,

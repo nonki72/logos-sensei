@@ -11,6 +11,13 @@ const suffixes = ['adj', 'adv', 'noun', 'verb'];
 const basicPOS = {n:'noun', v:'verb', a:'adjective', r:'adverb', s:'adjective satellite'};
 const basicFunctions = ['definition', 'synonym set', 'element', 'part of speech'];
 
+/* Wordnet identifier names
+ *
+ * WordnetFunc*
+ * WordnetPos*
+ * WordnetWord*
+ * WordnetSynset*
+ */
 
 class WordnetSensei {
 
@@ -26,18 +33,62 @@ class WordnetSensei {
   	self.basicPOSInstances = {};
   	self.basicFunctionInstances= {};
 
-  	// basic functions                   name,          astid,  fn,          fntype,  fnclass, argnum, argtypes, modules, memoize, testargs
+  	// basic functions
   	var basicPromises = [
-  	self.apiClient.createStoredFunction('definition',     null, undefined, 'identifier', 'string', 1, '["string"]', null, false, null)
+  	self.apiClient.createStoredFunction({
+				name: 'WordnetFuncDefinition',
+				astid: null, 
+				fn: null, 
+				fntype: 'identifier', 
+				fnclass: 'object', // array of words 
+				argnum: 1, 
+				argtypes: `[["word","string"]]`, 
+				modules: null, 
+				memoize: true, 
+				testargs: ["test"]
+	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['definition'] = freeIdentifier }),
 
-    self.apiClient.createStoredFunction('synonym set',    null, undefined, 'identifier', 'string', 1, '["number"]', null, false, null)
+    self.apiClient.createStoredFunction({
+				name: 'WordnetFuncSynset',
+				astid: null, 
+				fn: null, 
+				fntype: 'identifier', 
+				fnclass: 'set', 
+				argnum: 1, 
+				argtypes: `[["synset","number"]]`, 
+				modules: null, 
+				memoize: true, 
+				testargs: ["123"]
+	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['synonym set'] = freeIdentifier }),
 
-  	self.apiClient.createStoredFunction('element',        null, undefined, 'identifier', 'string', 1, '["identifier"]',  null, false, null)
+  	self.apiClient.createStoredFunction({
+				name: 'WordnetFuncElement',
+				astid: null, 
+				fn: null, 
+				fntype: 'identifier', 
+				fnclass: 'string', 
+				argnum: 1, 
+				argtypes: `[["set","object"]]`, 
+				modules: null, 
+				memoize: true, 
+				testargs: [["test"]]
+	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['element'] = freeIdentifier }),
 
-  	self.apiClient.createStoredFunction('part of speech', null, undefined, 'identifier', 'string', 1, '["number"]', null, false, null)
+  	self.apiClient.createStoredFunction({
+				name: 'WordnetFuncPOS',
+				astid: null, 
+				fn: null, 
+				fntype: 'identifier', 
+				fnclass: 'string', 
+				argnum: 1, 
+				argtypes: `[["synset","number"]]`, 
+				modules: null, 
+				memoize: true, 
+				testargs: ["123"]
+	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['part of speech'] = freeIdentifier })
   	];
 
@@ -45,8 +96,8 @@ class WordnetSensei {
   	var basicPromises = Object.keys(basicPOS).reduce((accumulator, basicPosAbbreviation) => {
   		const basicPosWord = basicPOS[basicPosAbbreviation];
   		return accumulator.concat([
-  			self.apiClient.createFreeIdentifier(basicPosWord)
-  			  .then((freeIdentifier) => { self.basicPOSInstances[basicPosWord] = freeIdentifier })
+  			self.apiClient.createStoredValue("WordnetPos"+basicPosAbbreviation.toUpperCase(), 'string', null, basicPosWord)
+  			  .then((freeIdentifier) => { self.basicPOSInstances[basicPosAbbreviation] = freeIdentifier })
   		]);
 
   	}, basicPromises);
@@ -64,6 +115,8 @@ class WordnetSensei {
   	promises = promises.then(() => {return this.basic()});
   	promises = promises.then(() => {console.log('Reading wordnet corpus...')});
 
+    // read words straight from the indexes
+    // (use them to perform lookup)
 		var getWordsPromise = (suffix) => {
 			var filepath = wndb.path + '\\index.' + suffix;
       var words = [];
@@ -81,6 +134,7 @@ class WordnetSensei {
 
      };
 
+    // for each index file
 		promises = promises.then(() => {
 		  return Q.all(suffixes.map(getWordsPromise))
 		  .then((wordsArrays) => {
@@ -90,11 +144,12 @@ class WordnetSensei {
 		  })
 		 });
 
-
+		// begin teaching
 		promises = promises
 		  .then((words) => {console.log('Starting Wordnet simple teaaching program...');return Q(words)})
     	.then((words) => {
 
+        // teach routine for a word
 				var teachPromise = function(obj) {
 					var word = obj.word;
 					var results = obj.results;
@@ -109,11 +164,11 @@ class WordnetSensei {
 		        // console.log(result.gloss);
 						process.stdout.write(word+'..');
 		        // sub: (synset $word) -> $synset
-		    		return self.apiClient.createFreeIdentifier(word)
+		    		return self.apiClient.createStoredValue("WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 'string', null, word)
 			    	  .then((freeIdentifierWord) => {
 			    		return self.apiClient.createApplication(self.basicFunctionInstances['synonym set'].id, freeIdentifierWord.id)
 			    		   .then((applicationSynsetWord) => {
-			    	    return self.apiClient.createFreeIdentifier("synset-" + result.synsetOffset)
+			    	    return self.apiClient.createStoredValue("WordnetSynset" + numToLetters(result.synsetOffset), 'number', null, parseInt(result.synsetOffset))
 			    	      .then((freeIdentifierSynset) => {
 			    		    return self.apiClient.createSubstitution('eta', applicationSynsetWord.id, freeIdentifierSynset.id)
 			    		      .then((substiution1) => {
@@ -129,6 +184,8 @@ class WordnetSensei {
 			    }));
         };
 
+        // for each word
+        // (wordnet lib's lookupAsync() is somehow faulty.. use deferred instead to make it a promise)
 		    return Q.map(words, (word) => {
 		    	  var deferred = Q.defer();
 		    	  self.wordnet.lookup(word,(err, results)=> {
@@ -150,6 +207,16 @@ class WordnetSensei {
 exports.WordnetSensei = WordnetSensei;
 
 
+function numToLetters(number) {
+	var num = new String(number);
+	var out = '';
+	for (var i = 0; i < num.length; i++) {
+		var char =  String.fromCharCode(94 + num[i]);
+		if (i == 0) char = char.toUpperCase();
+		out += char;
+	}
+	return out;
+}
 
 function wordsToChunks(words) {
 	var wordsChunks = [];

@@ -3,7 +3,10 @@ const Q = require('q');
 Q.map = require('q-map').map;
 const async = require('async');
 
-const suffixes = [];
+/* Native identifier names
+ *
+ * NativeFunc*
+ */
 
 class NativeSensei {
 
@@ -47,7 +50,7 @@ class NativeSensei {
 	  // create abstraction
   	promises = promises.then(() => {
 	  	var data = {
-				name: 'readOrCreateAbstraction',
+				name: 'NativeFuncReadOrCreateAbstraction',
 				astid: null, 
 				fn: `
 var defer = Q.defer();
@@ -68,168 +71,175 @@ defer.promise`,
 	  	return self.apiClient.createStoredFunction(data);
 	  });
 
- //    // create application
- //    promises = promises.then(() => {
- //  	var data = {
-	// 		name: 'readOrCreateApplication',
-	// 		astid: null, 
-	// 		fn: `var defer = Q.defer();
-	// 		     DataLib.readOrCreateApplication(CTX.args.definition1, CTX.args.definition2, (app) => {
-	// 		     	 if (app == null) defer.reject();
-	// 		     	 else defer.resolve(app);
-	// 		     });
-	// 		     defer.promise`, 
-	// 		fntype: 'promise', 
-	// 		fnclass: 'application', 
-	// 		argnum: 2, 
-	// 		argtypes: '[["definition1","number"], ["definition2","number"]]', 
-	// 		modules: null, 
-	// 		memoize: true, 
-	// 		testargs: [self.testValues.abstraction.id, self.testValues.freeIdentifier.id]
- //  	};
+    // create application
+    promises = promises.then(() => {
+  	var data = {
+			name: 'NativeFuncReadOrCreateApplication',
+			astid: null, 
+			fn: `
+var defer = Q.defer();
+DataLib.readOrCreateApplication(CTX.args.definition1, CTX.args.definition2, (app) => {
+	if (app == null) defer.reject();
+	else defer.resolve(app);
+});
+defer.promise`, 
+			fntype: 'promise', 
+			fnclass: 'application', 
+			argnum: 2, 
+			argtypes: '[["definition1","number"], ["definition2","number"]]', 
+			modules: null, 
+			memoize: true, 
+			testargs: [self.testValues.abstraction.id, self.testValues.freeIdentifier.id]
+  	};
 
-	// 	return self.apiClient.createStoredFunction(data);
-	// });
+		return self.apiClient.createStoredFunction(data);
+	});
 
- //    // create free identifier
- //    promises = promises.then(() => {
-	//   	var data = {
-	// 			name: 'readOrCreateFreeIdentifier',
-	// 			astid: null, 
-	// 			fn: `var defer = Q.defer();
-	// 			     DataLib.readOrCreateFreeIdentifier(CTX.args.name, (id) => {
-	// 			     	 if (id == null) defer.reject();
-	// 			     	 else defer.resolve(id);
-	// 			     });
-	// 			     defer.promise`, 
-	// 			fntype: 'promise', 
-	// 			fnclass: 'identifier', 
-	// 			argnum: 1, 
-	// 			argtypes: '[["name","string"]]', 
-	// 			modules: null, 
-	// 			memoize: true, 
-	// 			testargs: ["test"]
-	//   	};
+    // create free identifier
+    promises = promises.then(() => {
+	  	var data = {
+				name: 'NativeFuncReadOrCreateFreeIdentifier',
+				astid: null, 
+				fn: `
+var defer = Q.defer();
+DataLib.readOrCreateFreeIdentifier(CTX.args.name, (id) => {
+	 if (id == null) defer.reject();
+	 else defer.resolve(id);
+});
+defer.promise`, 
+				fntype: 'promise', 
+				fnclass: 'identifier', 
+				argnum: 1, 
+				argtypes: '[["name","string"]]', 
+				modules: null, 
+				memoize: true, 
+				testargs: ["test"]
+	  	};
 
-	// 		return self.apiClient.createStoredFunction(data);
-	// 	});
+			return self.apiClient.createStoredFunction(data);
+		});
 
- //    // create association
- //    promises = promises.then(() => {
-	//   	var data = {
-	// 			name: 'readOrCreateAssociation',
-	// 			astid: null, 
-	// 			fn: `var defer = Q.defer();
-	// 			     DataLib.readOrCreateAssociation(CTX.args.sourceid, CTX.args.destinationid, CTX.args.associativevalue, (ass) => {
-	// 			     	 if (ass == null) defer.reject();
-	// 			     	 else defer.resolve(ass);
-	// 			     });
-	// 			     defer.promise`, 
-	// 			fntype: 'promise', 
-	// 			fnclass: 'association', 
-	// 			argnum: 3, 
-	// 			argtypes: '[["sourceid","number"], ["destinationid","number"], ["associativevalue","number"]]', 
-	// 			modules: null, 
-	// 			memoize: false, 
-	// 			testargs: [self.testValues.freeIdentifier.id, self.testValues.abstraction.id, 0.1]
-	//   	};
+    // create association
+    promises = promises.then(() => {
+	  	var data = {
+				name: 'NativeFuncReadOrCreateAssociation',
+				astid: null, 
+				fn: `
+var defer = Q.defer();
+DataLib.readOrCreateAssociation(CTX.args.sourceid, CTX.args.destinationid, CTX.args.associativevalue, (ass) => {
+	 if (ass == null) defer.reject();
+	 else defer.resolve(ass);
+});
+defer.promise`, 
+				fntype: 'promise', 
+				fnclass: 'association', 
+				argnum: 3, 
+				argtypes: '[["sourceid","number"], ["destinationid","number"], ["associativevalue","number"]]', 
+				modules: null, 
+				memoize: false, 
+				testargs: [self.testValues.freeIdentifier.id, self.testValues.abstraction.id, 0.1]
+	  	};
 
- //    	return self.apiClient.createStoredFunction(data);
- //    });
+    	return self.apiClient.createStoredFunction(data);
+    });
 
- //    // create substitution
- //    promises = promises.then(() => {
-	//   	var data = {
-	// 			name: 'readOrCreateSubstitution',
-	// 			astid: null, 
-	// 			fn: `var defer = Q.defer();
-	// 			     DataLib.readOrCreateSubstitution(CTX.args.type, CTX.args.definition1, CTX.args.definition2, (sub) => {
-	// 			     	 if (sub == null) defer.reject();
-	// 			     	 else defer.resolve(sub);
-	// 			     });
-	// 			     defer.promise`, 
-	// 			fntype: 'promise', 
-	// 			fnclass: 'substitution', 
-	// 			argnum: 3, 
-	// 			argtypes: '[["type","string"], ["definition1","number"], ["definition2","number"]]', 
-	// 			modules: null, 
-	// 			memoize: true, 
-	// 			testargs: [self.testValues.freeIdentifier.id, self.testValues.abstraction.id, 0.1]
-	//   	};
+    // create substitution
+    promises = promises.then(() => {
+	  	var data = {
+				name: 'NativeFuncReadOrCreateSubstitution',
+				astid: null, 
+				fn: `
+var defer = Q.defer();
+DataLib.readOrCreateSubstitution(CTX.args.type, CTX.args.definition1, CTX.args.definition2, (sub) => {
+	 if (sub == null) defer.reject();
+	 else defer.resolve(sub);
+});
+defer.promise`, 
+				fntype: 'promise', 
+				fnclass: 'substitution', 
+				argnum: 3, 
+				argtypes: '[["type","string"], ["definition1","number"], ["definition2","number"]]', 
+				modules: null, 
+				memoize: true, 
+				testargs: [self.testValues.freeIdentifier.id, self.testValues.abstraction.id, 0.1]
+	  	};
 
- //    	return self.apiClient.createStoredFunction(data);
- //    });
+    	return self.apiClient.createStoredFunction(data);
+    });
 
- //    // read by id
- //    promises = promises.then(() => {
-	//   	var data = {
-	// 			name: 'readById',
-	// 			astid: null, 
-	// 			fn: `var defer = Q.defer();
-	// 			     DataLib.readById(CTX.args.id, (ent) => {
-	// 			     	 if (ent == null) defer.reject();
-	// 			     	 else defer.resolve(ent);
-	// 			     });
-	// 			     defer.promise`, 
-	// 			fntype: 'promise', 
-	// 			fnclass: 'entry', 
-	// 			argnum: 1, 
-	// 			argtypes: '[["id","number"]]', 
-	// 			modules: null, 
-	// 			memoize: true, 
-	// 			testargs: [self.testValues.freeIdentifier.id]
-	//   	};
+    // read by id
+    promises = promises.then(() => {
+	  	var data = {
+				name: 'NativeFuncReadById',
+				astid: null, 
+				fn: `
+var defer = Q.defer();
+DataLib.readById(CTX.args.id, (ent) => {
+	 if (ent == null) defer.reject();
+	 else defer.resolve(ent);
+});
+defer.promise`, 
+				fntype: 'promise', 
+				fnclass: 'entry', 
+				argnum: 1, 
+				argtypes: '[["id","number"]]', 
+				modules: null, 
+				memoize: true, 
+				testargs: [self.testValues.freeIdentifier.id]
+	  	};
 
- //    	return self.apiClient.createStoredFunction(data);
- //    });
-
-
- //    // read by associative value
- //    promises = promises.then(() => {
-	//   	var data = {
-	// 			name: 'readApplicatorByAssociativeValue',
-	// 			astid: null, 
-	// 			fn: `var defer = Q.defer();
-	// 			     DataLib.readApplicatorByAssociativeValue(CTX.args.sourceid, (ent) => {
-	// 			     	 if (ent == null) defer.reject();
-	// 			     	 else defer.resolve(ent);
-	// 			     });
-	// 			     defer.promise`, 
-	// 			fntype: 'promise', 
-	// 			fnclass: 'entry', 
-	// 			argnum: 1, 
-	// 			argtypes: '[["sourceid","number"]]', 
-	// 			modules: null, 
-	// 			memoize: false, 
-	// 			testargs: [self.testValues.freeIdentifier.id]
-	//   	};
-
- //    	return self.apiClient.createStoredFunction(data);
- //    });
+    	return self.apiClient.createStoredFunction(data);
+    });
 
 
- //    // read by random value
- //    promises = promises.then(() => {
-	//   	var data = {
-	// 			name: 'readByRandomValue',
-	// 			astid: null, 
-	// 			fn: `var defer = Q.defer();
-	// 			     DataLib.readByRandomValue((ent) => {
-	// 			     	 if (ent == null) defer.reject();
-	// 			     	 else defer.resolve(ent);
-	// 			     });
-	// 			     defer.promise`, 
-	// 			fntype: 'promise', 
-	// 			fnclass: 'entry', 
-	// 			argnum: 0, 
-	// 			argtypes: null, 
-	// 			modules: null, 
-	// 			memoize: false, 
-	// 			testargs: null
-	//   	};
+    // read by associative value
+    promises = promises.then(() => {
+	  	var data = {
+				name: 'NativeFuncReadApplicatorByAssociativeValue',
+				astid: null, 
+				fn: `
+var defer = Q.defer();
+DataLib.readApplicatorByAssociativeValue(CTX.args.sourceid, (ent) => {
+	 if (ent == null) defer.reject();
+	 else defer.resolve(ent);
+});
+defer.promise`, 
+				fntype: 'promise', 
+				fnclass: 'entry', 
+				argnum: 1, 
+				argtypes: '[["sourceid","number"]]', 
+				modules: null, 
+				memoize: false, 
+				testargs: [self.testValues.freeIdentifier.id]
+	  	};
 
- //    	return self.apiClient.createStoredFunction(data);
- //    });
+    	return self.apiClient.createStoredFunction(data);
+    });
+
+
+    // read by random value
+    promises = promises.then(() => {
+	  	var data = {
+				name: 'NativeFuncReadByRandomValue',
+				astid: null, 
+				fn: `
+var defer = Q.defer();
+DataLib.readByRandomValue((ent) => {
+	 if (ent == null) defer.reject();
+	 else defer.resolve(ent);
+});
+defer.promise`, 
+				fntype: 'promise', 
+				fnclass: 'entry', 
+				argnum: 0, 
+				argtypes: null, 
+				modules: null, 
+				memoize: false, 
+				testargs: null
+	  	};
+
+    	return self.apiClient.createStoredFunction(data);
+    });
 
 
     promises.done();
