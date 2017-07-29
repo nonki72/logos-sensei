@@ -39,8 +39,8 @@ class WordnetSensei {
 				name: 'WordnetFuncDefinition',
 				astid: null, 
 				fn: null, 
-				fntype: 'identifier', 
-				fnclass: 'object', // array of words 
+				fntype: 'string', 
+				fnclass: null,
 				argnum: 1, 
 				argtypes: `[["word","string"]]`, 
 				modules: null, 
@@ -53,13 +53,13 @@ class WordnetSensei {
 				name: 'WordnetFuncSynset',
 				astid: null, 
 				fn: null, 
-				fntype: 'identifier', 
-				fnclass: 'set', 
+				fntype: 'number', 
+				fnclass: null,
 				argnum: 1, 
-				argtypes: `[["synset","number"]]`, 
+				argtypes: `[["word","string"]]`, 
 				modules: null, 
 				memoize: true, 
-				testargs: ["123"]
+				testargs: ["test"]
 	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['synonym set'] = freeIdentifier }),
 
@@ -67,13 +67,13 @@ class WordnetSensei {
 				name: 'WordnetFuncElement',
 				astid: null, 
 				fn: null, 
-				fntype: 'identifier', 
-				fnclass: 'string', 
+				fntype: 'string', 
+				fnclass: null, 
 				argnum: 1, 
-				argtypes: `[["set","object"]]`, 
+				argtypes: `[["set","number"]]`, 
 				modules: null, 
 				memoize: true, 
-				testargs: [["test"]]
+				testargs: [123]
 	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['element'] = freeIdentifier }),
 
@@ -81,13 +81,13 @@ class WordnetSensei {
 				name: 'WordnetFuncPOS',
 				astid: null, 
 				fn: null, 
-				fntype: 'identifier', 
-				fnclass: 'string', 
+				fntype: 'string', 
+				fnclass: null, 
 				argnum: 1, 
 				argtypes: `[["synset","number"]]`, 
 				modules: null, 
 				memoize: true, 
-				testargs: ["123"]
+				testargs: [123]
 	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['part of speech'] = freeIdentifier })
   	];
@@ -96,7 +96,7 @@ class WordnetSensei {
   	var basicPromises = Object.keys(basicPOS).reduce((accumulator, basicPosAbbreviation) => {
   		const basicPosWord = basicPOS[basicPosAbbreviation];
   		return accumulator.concat([
-  			self.apiClient.createStoredValue("WordnetPos"+basicPosAbbreviation.toUpperCase(), 'string', null, basicPosWord)
+  			self.apiClient.createStoredValue("WordnetPos"+basicPosAbbreviation.toUpperCase(), 'string', null, '"'+basicPosWord+'"')
   			  .then((freeIdentifier) => { self.basicPOSInstances[basicPosAbbreviation] = freeIdentifier })
   		]);
 
@@ -164,18 +164,18 @@ class WordnetSensei {
 		        // console.log(result.gloss);
 						process.stdout.write(word+'..');
 		        // sub: (synset $word) -> $synset
-		    		return self.apiClient.createStoredValue("WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 'string', null, word)
+		    		return self.apiClient.createStoredValue("WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 'string', null, '"'+word+'"')
 			    	  .then((freeIdentifierWord) => {
-			    		return self.apiClient.createApplication(self.basicFunctionInstances['synonym set'].id, freeIdentifierWord.id)
+			    		return self.apiClient.createApplication(parseInt(self.basicFunctionInstances['synonym set'].id), parseInt(freeIdentifierWord.id))
 			    		   .then((applicationSynsetWord) => {
 			    	    return self.apiClient.createStoredValue("WordnetSynset" + numToLetters(result.synsetOffset), 'number', null, parseInt(result.synsetOffset))
 			    	      .then((freeIdentifierSynset) => {
-			    		    return self.apiClient.createSubstitution('eta', applicationSynsetWord.id, freeIdentifierSynset.id)
+			    		    return self.apiClient.createSubstitution('eta', parseInt(applicationSynsetWord.id), parseInt(freeIdentifierSynset.id))
 			    		      .then((substiution1) => {
 			    		    	// sub: (element $synset) -> word
-			    		    	return self.apiClient.createApplication(self.basicFunctionInstances['element'].id, freeIdentifierSynset.id)
+			    		    	return self.apiClient.createApplication(parseInt(self.basicFunctionInstances['element'].id), parseInt(freeIdentifierSynset.id))
 			    		    	  .then((applicationElementSynset) => {
-			    		    	  return self.apiClient.createSubstitution('eta', applicationElementSynset.id, freeIdentifierWord.id);
+			    		    	  return self.apiClient.createSubstitution('eta', parseInt(applicationElementSynset.id), parseInt(freeIdentifierWord.id));
 			    		    	});
 			    		    });
 			    		  });
@@ -198,8 +198,8 @@ class WordnetSensei {
 		    }, 20);
     	});
 
-    	promises.done();
-    }
+    return promises;
+  }
   
 }
 

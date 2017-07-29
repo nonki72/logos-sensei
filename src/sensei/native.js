@@ -21,10 +21,10 @@ class NativeSensei {
 
   	// lambda elements test values
   	return self.apiClient.createFreeIdentifier("test").then((freeIdentifier) => {
-	  	return self.apiClient.createAbstraction("test", freeIdentifier.id).then((abstraction) => {
-		  	return self.apiClient.createApplication(abstraction.id, freeIdentifier.id).then((application) => {
-			  	return self.apiClient.createSubstitution("eta", application.id, freeIdentifier.id).then((substiution) => {
-			  		return self.apiClient.createAssociation(freeIdentifier.id, abstraction.id, 0.1).then((association) => {
+	  	return self.apiClient.createAbstraction("test", parseInt(freeIdentifier.id)).then((abstraction) => {
+		  	return self.apiClient.createApplication(parseInt(abstraction.id), parseInt(freeIdentifier.id)).then((application) => {
+			  	return self.apiClient.createSubstitution("eta", parseInt(application.id), parseInt(freeIdentifier.id)).then((substiution) => {
+			  		return self.apiClient.createAssociation(parseInt(freeIdentifier.id), parseInt(abstraction.id), 0.1).then((association) => {
 			  			self.testValues["freeIdentifier"] = freeIdentifier;
 			  			self.testValues["abstraction"] = abstraction;
 			  			self.testValues["application"] = application;
@@ -56,11 +56,11 @@ class NativeSensei {
 var defer = Q.defer();
 DataLib.readOrCreateAbstraction(CTX.args.name, CTX.args.definition2, (abs) => {
   if (abs == null) defer.reject();
-  else defer.resolve(abs);
+  else defer.resolve(new Diary.Abstraction(abs));
 });
 defer.promise`, 
 				fntype: 'promise', 
-				fnclass: 'abstraction', 
+				fnclass: 'Abstraction', 
 				argnum: 2, 
 				argtypes: `[["name","string"], ["definition2","number"]]`, 
 				modules: null, 
@@ -80,16 +80,16 @@ defer.promise`,
 var defer = Q.defer();
 DataLib.readOrCreateApplication(CTX.args.definition1, CTX.args.definition2, (app) => {
 	if (app == null) defer.reject();
-	else defer.resolve(app);
+	else defer.resolve(new Diary.Application(app));
 });
 defer.promise`, 
 			fntype: 'promise', 
-			fnclass: 'application', 
+			fnclass: 'Application', 
 			argnum: 2, 
 			argtypes: '[["definition1","number"], ["definition2","number"]]', 
 			modules: null, 
 			memoize: true, 
-			testargs: [self.testValues.abstraction.id, self.testValues.freeIdentifier.id]
+			testargs: [parseInt(self.testValues.abstraction.id), parseInt(self.testValues.freeIdentifier.id)]
   	};
 
 		return self.apiClient.createStoredFunction(data);
@@ -104,11 +104,11 @@ defer.promise`,
 var defer = Q.defer();
 DataLib.readOrCreateFreeIdentifier(CTX.args.name, (id) => {
 	 if (id == null) defer.reject();
-	 else defer.resolve(id);
+	 else defer.resolve(new Diary.FreeIdentifier(id));
 });
 defer.promise`, 
 				fntype: 'promise', 
-				fnclass: 'identifier', 
+				fnclass: 'Identifier', 
 				argnum: 1, 
 				argtypes: '[["name","string"]]', 
 				modules: null, 
@@ -128,16 +128,16 @@ defer.promise`,
 var defer = Q.defer();
 DataLib.readOrCreateAssociation(CTX.args.sourceid, CTX.args.destinationid, CTX.args.associativevalue, (ass) => {
 	 if (ass == null) defer.reject();
-	 else defer.resolve(ass);
+	 else defer.resolve(new Diary.Association(ass));
 });
 defer.promise`, 
 				fntype: 'promise', 
-				fnclass: 'association', 
+				fnclass: 'Association', 
 				argnum: 3, 
 				argtypes: '[["sourceid","number"], ["destinationid","number"], ["associativevalue","number"]]', 
 				modules: null, 
 				memoize: false, 
-				testargs: [self.testValues.freeIdentifier.id, self.testValues.abstraction.id, 0.1]
+				testargs: [parseInt(self.testValues.freeIdentifier.id), parseInt(self.testValues.abstraction.id), 0.1]
 	  	};
 
     	return self.apiClient.createStoredFunction(data);
@@ -152,16 +152,16 @@ defer.promise`,
 var defer = Q.defer();
 DataLib.readOrCreateSubstitution(CTX.args.type, CTX.args.definition1, CTX.args.definition2, (sub) => {
 	 if (sub == null) defer.reject();
-	 else defer.resolve(sub);
+	 else defer.resolve(new Diary.Substitution(sub));
 });
 defer.promise`, 
 				fntype: 'promise', 
-				fnclass: 'substitution', 
+				fnclass: 'Substitution', 
 				argnum: 3, 
 				argtypes: '[["type","string"], ["definition1","number"], ["definition2","number"]]', 
 				modules: null, 
 				memoize: true, 
-				testargs: [self.testValues.freeIdentifier.id, self.testValues.abstraction.id, 0.1]
+				testargs: ['eta', parseInt(self.testValues.application.id), parseInt(self.testValues.freeIdentifier.id)]
 	  	};
 
     	return self.apiClient.createStoredFunction(data);
@@ -176,16 +176,16 @@ defer.promise`,
 var defer = Q.defer();
 DataLib.readById(CTX.args.id, (ent) => {
 	 if (ent == null) defer.reject();
-	 else defer.resolve(ent);
+	 else defer.resolve(new Diary.Entry(ent));
 });
 defer.promise`, 
 				fntype: 'promise', 
-				fnclass: 'entry', 
+				fnclass: 'Entry', 
 				argnum: 1, 
 				argtypes: '[["id","number"]]', 
 				modules: null, 
 				memoize: true, 
-				testargs: [self.testValues.freeIdentifier.id]
+				testargs: [parseInt(self.testValues.freeIdentifier.id)]
 	  	};
 
     	return self.apiClient.createStoredFunction(data);
@@ -201,16 +201,16 @@ defer.promise`,
 var defer = Q.defer();
 DataLib.readApplicatorByAssociativeValue(CTX.args.sourceid, (ent) => {
 	 if (ent == null) defer.reject();
-	 else defer.resolve(ent);
+	 else defer.resolve(new Diary.Entry(ent));
 });
 defer.promise`, 
 				fntype: 'promise', 
-				fnclass: 'entry', 
+				fnclass: 'Entry', 
 				argnum: 1, 
 				argtypes: '[["sourceid","number"]]', 
 				modules: null, 
 				memoize: false, 
-				testargs: [self.testValues.freeIdentifier.id]
+				testargs: [parseInt(self.testValues.freeIdentifier.id)]
 	  	};
 
     	return self.apiClient.createStoredFunction(data);
@@ -226,11 +226,11 @@ defer.promise`,
 var defer = Q.defer();
 DataLib.readByRandomValue((ent) => {
 	 if (ent == null) defer.reject();
-	 else defer.resolve(ent);
+	 else defer.resolve(new Diary.Entry(ent));
 });
 defer.promise`, 
 				fntype: 'promise', 
-				fnclass: 'entry', 
+				fnclass: 'Entry', 
 				argnum: 0, 
 				argtypes: null, 
 				modules: null, 
@@ -242,7 +242,7 @@ defer.promise`,
     });
 
 
-    promises.done();
+    return promises;
 
   }
 }
