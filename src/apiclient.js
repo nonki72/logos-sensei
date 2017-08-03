@@ -155,7 +155,36 @@ class ApiClient {
 
 	}
 
+	createModule(name, path) {
+		var data = {name: name, path: path};
+		
+		return request.post(this.hostname + "/api/module/" + name)
+		  .send(data).end()
+	    .then(function(res) {
+				if (!res.ok) throw new Error(res.status);
+	    	// console.log("success:"+JSON.stringify(res.body));
+				return res.body.module;
+	    }, (res)=>{
+	    	console.log(res.message + " : " + res.response.res.text);
+	    });
 
+	}
+
+
+	createClass(name, module) {
+		var data = {name: name, module: module};
+		
+		return request.post(this.hostname + "/api/class/" + name)
+		  .send(data).end()
+	    .then(function(res) {
+				if (!res.ok) throw new Error(res.status);
+	    	// console.log("success:"+JSON.stringify(res.body));
+				return res.body.module;
+	    }, (res)=>{
+	    	console.log(res.message + " : " + res.response.res.text);
+	    });
+
+	}
 }
 
 exports.ApiClient = ApiClient;

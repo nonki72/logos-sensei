@@ -3,11 +3,12 @@
 const Q = require('q');
 const Services = require('service-js');
 const ApiClient = require('./src/apiclient');
-const WordnetSensei = require('./src/sensei/wordnet');
+const IoSensei = require('./src/sensei/io');
 const NativeSensei = require('./src/sensei/native');
+const WordnetSensei = require('./src/sensei/wordnet');
 
 // order in which to run sensei's
-var services = ['WordnetSensei', 'NativeSensei'];
+var services = ['IoSensei', 'NativeSensei', 'WordnetSensei'];
 
 // API Client Service
 var ApiClientService = Object.create(Services.Service);
@@ -19,6 +20,31 @@ Services.register('ApiClient', ApiClientService);
 
 
 // ##### Sensei's #######
+
+// I/O Sensei
+var IoSenseiService = Object.create(Services.Service);
+IoSenseiService.onStart = function() {
+	return Services.ready('ApiClient').spread((apiClient) => {
+	  IoSenseiService.service = new IoSensei.IoSensei(apiClient.service);
+	});
+}
+IoSenseiService.isUsable = function() {
+  return Services.ready('ApiClient');
+};
+Services.register('IoSensei', IoSenseiService);
+
+
+// Native Sensei
+var NativeSenseiService = Object.create(Services.Service);
+NativeSenseiService.onStart = function() {
+	return Services.ready('ApiClient').spread((apiClient) => {
+	  NativeSenseiService.service = new NativeSensei.NativeSensei(apiClient.service);
+	});
+}
+NativeSenseiService.isUsable = function() {
+  return Services.ready('ApiClient');
+};
+Services.register('NativeSensei', NativeSenseiService);
 
 // Wordnet Sensei
 var WordnetSenseiService = Object.create(Services.Service);
@@ -32,17 +58,7 @@ WordnetSenseiService.isUsable = function() {
 };
 Services.register('WordnetSensei', WordnetSenseiService);
 
-// Native Sensei
-var NativeSenseiService = Object.create(Services.Service);
-NativeSenseiService.onStart = function() {
-	return Services.ready('ApiClient').spread((apiClient) => {
-	  NativeSenseiService.service = new NativeSensei.NativeSensei(apiClient.service);
-	});
-}
-NativeSenseiService.isUsable = function() {
-  return Services.ready('ApiClient');
-};
-Services.register('NativeSensei', NativeSenseiService);
+
 
 
 // Initialization
@@ -65,9 +81,8 @@ function startUp() {
 						}, () => {
 							console.log('.');
 							setTimeout(startService, 500, serviceName, promise);
-							return true
-						}).then((error) => {
-							if (!error) console.log("========= Sensei Service '" + serviceName + "' finished. =========")
+						}).then(() => {
+							console.log("========= Sensei Service '" + serviceName + "' finished. =========")
 						})
 		});
 		promise.chain.done();
