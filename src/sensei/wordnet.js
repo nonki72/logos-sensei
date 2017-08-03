@@ -1,6 +1,5 @@
 'use strict';
-const Q = require('q');
-Q.map = require('q-map').map;
+var Promise = require("bluebird");
 const lineReader = require('line-reader');
 const async = require('async');
 const wndb = require('wndb-with-exceptions');
@@ -102,7 +101,7 @@ class WordnetSensei {
 
   	}, basicPromises);
 
-    return Q.all(basicPromises);
+    return Promise.all(basicPromises);
 
   }
 
@@ -111,9 +110,9 @@ class WordnetSensei {
   teach() {
 	  var self = this;
 
-  	var promises = Q.fcall(() => {console.log('Establishing basic definitions...')});
+  	var promises = new Promise((resolve) => {console.log('Establishing basic definitions...'); resolve()})
   	promises = promises.then(() => {return this.basic()});
-  	promises = promises.then(() => {console.log('Reading wordnet corpus...')});
+    promises = promises.then(() => {console.log('Reading wordnet corpus...')});
 
     // read words straight from the indexes
     // (use them to perform lookup)
@@ -121,7 +120,7 @@ class WordnetSensei {
 			var filepath = wndb.path + '\\index.' + suffix;
       var words = [];
 
-			var lineReaderPromise = Q.denodeify(lineReader.eachLine);
+			var lineReaderPromise = Promise.promisify(lineReader.eachLine);
 			return lineReaderPromise(filepath, function(line) {
 				if (line.substr(0,1) == ' ') return;
 				var word = line.substr(0, line.indexOf(' '));
@@ -136,7 +135,7 @@ class WordnetSensei {
 
     // for each index file
 		promises = promises.then(() => {
-		  return Q.all(suffixes.map(getWordsPromise))
+		  return Promise.all(suffixes.map(getWordsPromise))
 		  .then((wordsArrays) => {
 			  var words = [].concat.apply([], wordsArrays);
 			  console.log("Completed reading all indexes, total count: " + words.length);
@@ -146,15 +145,15 @@ class WordnetSensei {
 
 		// begin teaching
 		promises = promises
-		  .then((words) => {console.log('Starting Wordnet simple teaaching program...');return Q(words)})
+		  .then((words) => {console.log('Starting Wordnet simple teaaching program...');return Promise.resolve(words)})
     	.then((words) => {
 
         // teach routine for a word
-				var teachPromise = function(obj) {
+				var teachPromise = (obj) => {
 					var word = obj.word;
 					var results = obj.results;
 					// store words
-			    return Q.all(results.map((result) => {
+			    return Promise.all(results.map((result) => {
 		        // console.log('------------------------------------');
 		        // console.log(result.synsetOffset);
 		        // console.log(result.pos);
@@ -186,16 +185,17 @@ class WordnetSensei {
 
         // for each word
         // (wordnet lib's lookupAsync() is somehow faulty.. use deferred instead to make it a promise)
-		    return Q.map(words, (word) => {
-		    	  var deferred = Q.defer();
-		    	  self.wordnet.lookup(word,(err, results)=> {
-		    	  	if (err) deferred.reject(err);
-		    	  	deferred.resolve(results);
+		    return Promise.map(words, (word) => {
+		    	  var lookupPromise = new Promise((resolve, reject) => {
+		    	  	self.wordnet.lookup(word, (err, results) => {
+			    	  	if (err) reject(err);
+			    	  	else resolve(results);
+		    	  	});
 		    	  });
-		    	  return deferred.promise
-		    	  .then((results) => {return Q({word: word, results: results})})
+		    	  return lookupPromise
+		    	  .then((results) => {return Promise.resolve({word: word, results: results})})
 		    	  .then(teachPromise)
-		    }, 20);
+		    }, {concurrency: 5});
     	});
 
     return promises;
@@ -211,8 +211,7 @@ function numToLetters(number) {
 	var num = new String(number);
 	var out = '';
 	for (var i = 0; i < num.length; i++) {
-		var char =  String.fromCharCode(94 + num[i]);
-		if (i == 0) char = char.toUpperCase();
+		var char =  String.fromCharCode(65 + parseInt(num.charAt(i)));
 		out += char;
 	}
 	return out;

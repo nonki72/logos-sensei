@@ -19,6 +19,7 @@
   "homepage": "https://github.com/jcote/logos-sensei#readme",
   "dependencies": {
     "async": "^2.5.0",
+    "bluebird": "^3.5.0",
     "line-reader": "^0.4.0",
     "node-wordnet": "^0.1.12",
     "q": "^1.5.0",
