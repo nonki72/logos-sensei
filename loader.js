@@ -12,7 +12,7 @@ var services = ['IoSensei', 'NativeSensei', 'WordnetSensei'];
 
 // API Client Service
 var ApiClientService = Object.create(Services.Service);
-ApiClientService.service = new ApiClient.ApiClient("http://localhost");
+ApiClientService.service = new ApiClient.ApiClient("http://localhost:8080");
 ApiClientService.isUsable = function() {
   return Q.nbind(this.service.healthCheck, this.service);
 };
