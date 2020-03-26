@@ -39,15 +39,7 @@ var defer = Q.defer();
 global.readlineInterface.on('line', (input) => { // will append listener to interface (not override)
 	defer.resolve(input);
 });
-global.readlineInterface.on('SIGINT', () => {
-	defer.reject('SIGINT');
-});
-global.readlineInterface.on('close', () => {
-	defer.reject('close'); // will not fire promise after a resolve (or reject)
-});
-if (!global.readlineInterfaceListening) {
-  global.readlineInterface.prompt();
-}
+global.readlineInterface.prompt();
 defer.promise`, 
 				fntype: 'promise', 
 				fnclass: 'string', 

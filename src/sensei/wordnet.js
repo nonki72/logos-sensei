@@ -117,7 +117,7 @@ class WordnetSensei {
     // read words straight from the indexes
     // (use them to perform lookup)
 		var getWordsPromise = (suffix) => {
-			var filepath = wndb.path + '\\index.' + suffix;
+			var filepath = wndb.path + '/index.' + suffix;
       var words = [];
 
 			var lineReaderPromise = Promise.promisify(lineReader.eachLine);
