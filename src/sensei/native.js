@@ -24,7 +24,7 @@ class NativeSensei {
 	  	return self.apiClient.createAbstraction("test", parseInt(freeIdentifier.id)).then((abstraction) => {
 		  	return self.apiClient.createApplication(parseInt(abstraction.id), parseInt(freeIdentifier.id)).then((application) => {
 			  	return self.apiClient.createSubstitution("eta", parseInt(application.id), parseInt(freeIdentifier.id)).then((substiution) => {
-			  		return self.apiClient.createAssociation(parseInt(freeIdentifier.id), parseInt(abstraction.id), 0.1).then((association) => {
+			  		return self.apiClient.createAssociation(parseInt(freeIdentifier.id), parseInt(abstraction.id), 1).then((association) => {
 			  			self.testValues["freeIdentifier"] = freeIdentifier;
 			  			self.testValues["abstraction"] = abstraction;
 			  			self.testValues["application"] = application;
@@ -120,28 +120,28 @@ defer.promise`,
 		});
 
     // create association
-    promises = promises.then(() => {
-	  	var data = {
-				name: 'NativeFuncReadOrCreateAssociation',
-				astid: null, 
-				fn: `
-var defer = Q.defer();
-DataLib.readOrCreateAssociation(CTX.args.sourceid, CTX.args.destinationid, CTX.args.associativevalue, (ass) => {
-	 if (ass == null) defer.reject();
-	 else defer.resolve(new Diary.Association(ass));
-});
-defer.promise`, 
-				fntype: 'promise', 
-				fnclass: 'Association', 
-				argnum: 3, 
-				argtypes: '[["sourceid","number"], ["destinationid","number"], ["associativevalue","number"]]', 
-				modules: null, 
-				memoize: false, 
-				testargs: [parseInt(self.testValues.freeIdentifier.id), parseInt(self.testValues.abstraction.id), 0.1]
-	  	};
+//     promises = promises.then(() => {
+// 	  	var data = {
+// 				name: 'NativeFuncReadOrCreateAssociation',
+// 				astid: null, 
+// 				fn: `
+// var defer = Q.defer();
+// DataLib.readOrCreateAssociation(CTX.args.sourceid, CTX.args.destinationid, CTX.args.associativevalue, (ass) => {
+// 	 if (ass == null) defer.reject();
+// 	 else defer.resolve(new Diary.Association(ass));
+// });
+// defer.promise`, 
+// 				fntype: 'promise', 
+// 				fnclass: 'Association', 
+// 				argnum: 3, 
+// 				argtypes: '[["sourceid","number"], ["destinationid","number"], ["associativevalue","number"]]', 
+// 				modules: null, 
+// 				memoize: false, 
+// 				testargs: [parseInt(self.testValues.freeIdentifier.id), parseInt(self.testValues.abstraction.id), 0.1]
+// 	  	};
 
-    	return self.apiClient.createStoredFunction(data);
-    });
+//     	return self.apiClient.createStoredFunction(data);
+//     });
 
     // create substitution
     promises = promises.then(() => {
