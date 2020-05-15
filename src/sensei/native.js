@@ -21,10 +21,10 @@ class NativeSensei {
 
   	// lambda elements test values
   	return self.apiClient.createFreeIdentifier("test").then((freeIdentifier) => {
-	  	return self.apiClient.createAbstraction("test", parseInt(freeIdentifier.id)).then((abstraction) => {
-		  	return self.apiClient.createApplication(parseInt(abstraction.id), parseInt(freeIdentifier.id)).then((application) => {
-			  	return self.apiClient.createSubstitution("eta", parseInt(application.id), parseInt(freeIdentifier.id)).then((substiution) => {
-			  		return self.apiClient.createAssociation(parseInt(freeIdentifier.id), parseInt(abstraction.id), 1).then((association) => {
+	  	return self.apiClient.createAbstraction("test", freeIdentifier.id).then((abstraction) => {
+		  	return self.apiClient.createApplication(abstraction.id, freeIdentifier.id).then((application) => {
+			  	return self.apiClient.createSubstitution("eta", application.id, freeIdentifier.id).then((substiution) => {
+			  		return self.apiClient.createAssociation(freeIdentifier.id, abstraction.id, 1).then((association) => {
 			  			self.testValues["freeIdentifier"] = freeIdentifier;
 			  			self.testValues["abstraction"] = abstraction;
 			  			self.testValues["application"] = application;
@@ -65,7 +65,7 @@ defer.promise`,
 				argtypes: `[["name","string"], ["definition2","number"]]`, 
 				modules: null, 
 				memoize: true, 
-				testargs: ["test", parseInt(self.testValues.freeIdentifier.id)]
+				testargs: ["test", self.testValues.freeIdentifier.id]
 	  	};
 
 	  	return self.apiClient.createStoredFunction(data);
@@ -89,7 +89,7 @@ defer.promise`,
 			argtypes: '[["definition1","number"], ["definition2","number"]]', 
 			modules: null, 
 			memoize: true, 
-			testargs: [parseInt(self.testValues.abstraction.id), parseInt(self.testValues.freeIdentifier.id)]
+			testargs: [self.testValues.abstraction.id, self.testValues.freeIdentifier.id]
   	};
 
 		return self.apiClient.createStoredFunction(data);
@@ -137,7 +137,7 @@ defer.promise`,
 // 				argtypes: '[["sourceid","number"], ["destinationid","number"], ["associativevalue","number"]]', 
 // 				modules: null, 
 // 				memoize: false, 
-// 				testargs: [parseInt(self.testValues.freeIdentifier.id), parseInt(self.testValues.abstraction.id), 0.1]
+// 				testargs: [self.testValues.freeIdentifier.id), self.testValues.abstraction.id), 0.1]
 // 	  	};
 
 //     	return self.apiClient.createStoredFunction(data);
@@ -161,7 +161,7 @@ defer.promise`,
 				argtypes: '[["type","string"], ["definition1","number"], ["definition2","number"]]', 
 				modules: null, 
 				memoize: true, 
-				testargs: ['eta', parseInt(self.testValues.application.id), parseInt(self.testValues.freeIdentifier.id)]
+				testargs: ['eta', self.testValues.application.id, self.testValues.freeIdentifier.id]
 	  	};
 
     	return self.apiClient.createStoredFunction(data);
@@ -185,7 +185,7 @@ defer.promise`,
 				argtypes: '[["id","number"]]', 
 				modules: null, 
 				memoize: true, 
-				testargs: [parseInt(self.testValues.freeIdentifier.id)]
+				testargs: [self.testValues.freeIdentifier.id]
 	  	};
 
     	return self.apiClient.createStoredFunction(data);
@@ -210,7 +210,7 @@ defer.promise`,
 				argtypes: '[["sourceid","number"]]', 
 				modules: null, 
 				memoize: false, 
-				testargs: [parseInt(self.testValues.freeIdentifier.id)]
+				testargs: [self.testValues.freeIdentifier.id]
 	  	};
 
     	return self.apiClient.createStoredFunction(data);
