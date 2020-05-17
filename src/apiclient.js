@@ -70,14 +70,13 @@ class ApiClient {
 		return this.createStoredFunction(data);
 	}
 
-	createAssociation(sourceid, destinationid, associativevalue) {
+	incrementEC(sourceid, destinationid) {
 		var data = {
 			sourceid: sourceid,
-			destinationid: destinationid,
-			associativevalue: associativevalue
+			destinationid: destinationid
 		};
 		
-		return request.post(this.hostname + "/api/lambda/association")
+		return request.post(this.hostname + "/api/ec/increment")
 		  .send(data).end()
 	    .then(function(res) {
 				if (!res.ok) throw new Error(res.status);

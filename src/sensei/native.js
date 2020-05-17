@@ -24,14 +24,11 @@ class NativeSensei {
 	  	return self.apiClient.createAbstraction("test", freeIdentifier.id).then((abstraction) => {
 		  	return self.apiClient.createApplication(abstraction.id, freeIdentifier.id).then((application) => {
 			  	return self.apiClient.createSubstitution("eta", application.id, freeIdentifier.id).then((substiution) => {
-			  		return self.apiClient.createAssociation(freeIdentifier.id, abstraction.id, 1).then((association) => {
-			  			self.testValues["freeIdentifier"] = freeIdentifier;
-			  			self.testValues["abstraction"] = abstraction;
-			  			self.testValues["application"] = application;
-			  			self.testValues["substiution"] = substiution;
-			  			self.testValues["association"] = association;
-			  			return self.testValues;
-			  		})
+		  			self.testValues["freeIdentifier"] = freeIdentifier;
+		  			self.testValues["abstraction"] = abstraction;
+		  			self.testValues["application"] = application;
+		  			self.testValues["substiution"] = substiution;
+		  			return self.testValues;
 			  	})
 		  	})
 	  	})
@@ -62,7 +59,7 @@ defer.promise`,
 				fntype: 'promise', 
 				fnclass: 'Abstraction', 
 				argnum: 2, 
-				argtypes: `[["name","string"], ["definition2","number"]]`, 
+				argtypes: `[["name","string"], ["definition2","string"]]`, 
 				modules: null, 
 				memoize: true, 
 				testargs: ["test", self.testValues.freeIdentifier.id]
@@ -86,7 +83,7 @@ defer.promise`,
 			fntype: 'promise', 
 			fnclass: 'Application', 
 			argnum: 2, 
-			argtypes: '[["definition1","number"], ["definition2","number"]]', 
+			argtypes: '[["definition1","string"], ["definition2","string"]]', 
 			modules: null, 
 			memoize: true, 
 			testargs: [self.testValues.abstraction.id, self.testValues.freeIdentifier.id]
@@ -158,7 +155,7 @@ defer.promise`,
 				fntype: 'promise', 
 				fnclass: 'Substitution', 
 				argnum: 3, 
-				argtypes: '[["type","string"], ["definition1","number"], ["definition2","number"]]', 
+				argtypes: '[["type","string"], ["definition1","string"], ["definition2","string"]]', 
 				modules: null, 
 				memoize: true, 
 				testargs: ['eta', self.testValues.application.id, self.testValues.freeIdentifier.id]
@@ -182,7 +179,7 @@ defer.promise`,
 				fntype: 'promise', 
 				fnclass: 'Entry', 
 				argnum: 1, 
-				argtypes: '[["id","number"]]', 
+				argtypes: '[["id","string"]]', 
 				modules: null, 
 				memoize: true, 
 				testargs: [self.testValues.freeIdentifier.id]
@@ -207,7 +204,7 @@ defer.promise`,
 				fntype: 'promise', 
 				fnclass: 'Entry', 
 				argnum: 1, 
-				argtypes: '[["sourceid","number"]]', 
+				argtypes: '[["sourceid","string"]]', 
 				modules: null, 
 				memoize: false, 
 				testargs: [self.testValues.freeIdentifier.id]

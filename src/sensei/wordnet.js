@@ -145,7 +145,7 @@ class WordnetSensei {
 
 		// begin teaching
 		promises = promises
-		  .then((words) => {console.log('Starting Wordnet simple teaaching program...');return Promise.resolve(words)})
+		  .then((words) => {console.log('Starting Wordnet simple teaching program...');return Promise.resolve(words)})
     	.then((words) => {
 
         // teach routine for a word
@@ -165,16 +165,16 @@ class WordnetSensei {
 		        // sub: (synset $word) -> $synset
 		    		return self.apiClient.createStoredValue("WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 'string', null, '"'+word+'"')
 			    	  .then((freeIdentifierWord) => {
-			    		return self.apiClient.createApplication(parseInt(self.basicFunctionInstances['synonym set'].id), parseInt(freeIdentifierWord.id))
+			    		return self.apiClient.createApplication(self.basicFunctionInstances['synonym set'].id, freeIdentifierWord.id)
 			    		   .then((applicationSynsetWord) => {
 			    	    return self.apiClient.createStoredValue("WordnetSynset" + numToLetters(result.synsetOffset), 'number', null, parseInt(result.synsetOffset))
 			    	      .then((freeIdentifierSynset) => {
-			    		    return self.apiClient.createSubstitution('eta', parseInt(applicationSynsetWord.id), parseInt(freeIdentifierSynset.id))
+			    		    return self.apiClient.createSubstitution('eta', applicationSynsetWord.id, freeIdentifierSynset.id)
 			    		      .then((substiution1) => {
 			    		    	// sub: (element $synset) -> word
-			    		    	return self.apiClient.createApplication(parseInt(self.basicFunctionInstances['element'].id), parseInt(freeIdentifierSynset.id))
+			    		    	return self.apiClient.createApplication(self.basicFunctionInstances['element'].id, freeIdentifierSynset.id)
 			    		    	  .then((applicationElementSynset) => {
-			    		    	  return self.apiClient.createSubstitution('eta', parseInt(applicationElementSynset.id), parseInt(freeIdentifierWord.id));
+			    		    	  return self.apiClient.createSubstitution('eta', applicationElementSynset.id, freeIdentifierWord.id);
 			    		    	});
 			    		    });
 			    		  });
