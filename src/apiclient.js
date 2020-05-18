@@ -27,7 +27,7 @@ class ApiClient {
 			if (!res.ok) throw new Error(res.status);
 			return res.body.freeidentifier;
     }, (res)=>{
-    	console.log(res.message + " : " + res.response.res.text);
+    	console.log(res.message + " : " + res.response);
     });
   }
 
@@ -50,7 +50,7 @@ class ApiClient {
 	    	//console.log("success:"+JSON.stringify(res.body));
 				return res.body.storedfunction;
 	    }, (res)=>{
-	    	console.log(res.message + " : " + res.response.res.text);
+	    	console.log(res.message + " : " + res.response);
 	    });
 	}
 
@@ -83,7 +83,7 @@ class ApiClient {
 	    	// console.log("success:"+JSON.stringify(res.body));
 				return res.body.association;
 	    }, (res)=>{
-	    	console.log(res.message + " : " + res.response.res.text);
+	    	console.log(res.message + " : " + res.response);
 	    });
 	}
 
@@ -100,7 +100,7 @@ class ApiClient {
 	    	// console.log("success:"+JSON.stringify(res.body));
 				return res.body.application;
 	    }, (res)=>{
-	    	console.log(res.message + " : " + res.response.res.text);
+	    	console.log(res.message + " : " + res.response);
 	    });
 	}
 
@@ -117,7 +117,7 @@ class ApiClient {
 	    	// console.log("success:"+JSON.stringify(res.body));
 				return res.body.abstraction;
 	    }, (res)=>{
-	    	console.log(res.message + " : " + res.response.res.text);
+	    	console.log(res.message + " : " + res.response);
 	    });
 	}
 
@@ -135,7 +135,7 @@ class ApiClient {
 	    //	console.log("success:"+JSON.stringify(res.body));
 				return res.body.substitution;
 	    }, (res)=>{
-	    	console.log(res.message + " : " + res.response.res.text);
+	    	console.log(res.message + " : " + res.response);
 	    });
 	}
 
@@ -149,7 +149,7 @@ class ApiClient {
 	    	// console.log("success:"+JSON.stringify(res.body));
 				return res.body.freeidentifier;
 	    }, (res)=>{
-	    	console.log(res.message + " : " + res.response.res.text);
+	    	console.log(res.message + " : " + res.response);
 	    });
 
 	}
@@ -164,7 +164,7 @@ class ApiClient {
 	    	// console.log("success:"+JSON.stringify(res.body));
 				return res.body.module;
 	    }, (res)=>{
-	    	console.log(res.message + " : " + res.response.res.text);
+	    	console.log(res.message + " : " + res.response);
 	    });
 
 	}
@@ -180,7 +180,7 @@ class ApiClient {
 	    	// console.log("success:"+JSON.stringify(res.body));
 				return res.body.module;
 	    }, (res)=>{
-	    	console.log(res.message + " : " + res.response.res.text);
+	    	console.log(res.message + " : " + res.response);
 	    });
 
 	}

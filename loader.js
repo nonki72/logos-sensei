@@ -5,10 +5,11 @@ const Services = require('service-js');
 const ApiClient = require('./src/apiclient');
 const IoSensei = require('./src/sensei/io');
 const NativeSensei = require('./src/sensei/native');
+const AssociationSensei = require('./src/sensei/association');
 const WordnetSensei = require('./src/sensei/wordnet');
 
 // order in which to run sensei's
-var services = ['IoSensei', 'NativeSensei', 'WordnetSensei'];
+var services = ['IoSensei', 'NativeSensei', 'AssociationSensei', 'WordnetSensei'];
 
 // API Client Service
 var ApiClientService = Object.create(Services.Service);
@@ -45,6 +46,18 @@ NativeSenseiService.isUsable = function() {
   return Services.ready('ApiClient');
 };
 Services.register('NativeSensei', NativeSenseiService);
+
+// Association Sensei
+var AssociationSenseiService = Object.create(Services.Service);
+AssociationSenseiService.onStart = function() {
+	return Services.ready('ApiClient').spread((apiClient) => {
+	  AssociationSenseiService.service = new AssociationSensei.AssociationSensei(apiClient.service);
+	});
+}
+AssociationSenseiService.isUsable = function() {
+  return Services.ready('ApiClient');
+};
+Services.register('AssociationSensei', AssociationSenseiService);
 
 // Wordnet Sensei
 var WordnetSenseiService = Object.create(Services.Service);
