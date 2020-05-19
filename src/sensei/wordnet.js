@@ -41,7 +41,7 @@ class WordnetSensei {
 				fntype: 'string', 
 				fnclass: null,
 				argnum: 1, 
-				argtypes: `[["word","string"]]`, 
+				argtypes: [["word","string"]], 
 				modules: null, 
 				memoize: true, 
 				testargs: ["test"]
@@ -55,7 +55,7 @@ class WordnetSensei {
 				fntype: 'number', 
 				fnclass: null,
 				argnum: 1, 
-				argtypes: `[["word","string"]]`, 
+				argtypes: [["word","string"]], 
 				modules: null, 
 				memoize: true, 
 				testargs: ["test"]
@@ -69,7 +69,7 @@ class WordnetSensei {
 				fntype: 'string', 
 				fnclass: null, 
 				argnum: 1, 
-				argtypes: `[["set","number"]]`, 
+				argtypes: [["set","number"]], 
 				modules: null, 
 				memoize: true, 
 				testargs: [123]
@@ -83,7 +83,7 @@ class WordnetSensei {
 				fntype: 'string', 
 				fnclass: null, 
 				argnum: 1, 
-				argtypes: `[["synset","number"]]`, 
+				argtypes: [["synset","number"]], 
 				modules: null, 
 				memoize: true, 
 				testargs: [123]

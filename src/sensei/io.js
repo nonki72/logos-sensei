@@ -63,7 +63,7 @@ console.log(CTX.args.line)`,
 				fntype: undefined, 
 				fnclass: null, 
 				argnum: 1, 
-				argtypes: '[["line","string"]]', 
+				argtypes: [["line","string"]], 
 				modules: null, 
 				memoize: false, 
 				testargs: ["konnichiwa sekai"]
