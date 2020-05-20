@@ -29,17 +29,21 @@ class IoSensei {
 				name: 'readlineInputLine',
 				astid: null, 
 				fn: `
-if (!global.readlineInterface) {
-	global.readlineInterface = readline.createInterface({
-		input: process.stdin,
-	  output: process.stdout
-	});
-}
-var defer = Q.defer();
-global.readlineInterface.on('line', (input) => { // will append listener to interface (not override)
-	defer.resolve(input);
+var rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
 });
-global.readlineInterface.prompt();
+var defer = Q.defer();
+var response;
+rl.setPrompt("Waiting for input...");
+rl.prompt();
+rl.on('line', (userInput) => {
+    response = userInput;
+    rl.close();
+});
+rl.on('close', () => {
+    return defer.resolve(response);
+});
 defer.promise`, 
 				fntype: 'string', 
 				fnclass: null, 
