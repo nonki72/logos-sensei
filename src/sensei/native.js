@@ -27,11 +27,12 @@ class NativeSensei {
   	return self.apiClient.createFreeIdentifier("test").then((freeIdentifier) => {
 	  	return self.apiClient.createAbstraction("test", freeIdentifier.id).then((abstraction) => {
 		  	return self.apiClient.createApplication(abstraction.id, freeIdentifier.id).then((application) => {
-			  	return self.apiClient.createSubstitution("eta", application.id, freeIdentifier.id).then((substiution) => {
+			  	return self.apiClient.createSubstitution("eta", application.id, freeIdentifier.id).then((substitution) => {
 		  			self.testValues["freeIdentifier"] = AST.cast(freeIdentifier);
 		  			self.testValues["abstraction"] = AST.cast(abstraction);
 		  			self.testValues["application"] = AST.cast(application);
-		  			self.testValues["substiution"] = AST.cast(substiution);
+		  			self.testValues["substitution"] = AST.cast(substitution);
+		  			console.log(JSON.stringify(application,null,4))
 		  			return self.testValues;
 			  	})
 		  	})
@@ -156,11 +157,11 @@ defer.promise`,
 var defer = Q.defer();
 DataLib.readOrCreateSubstitution(CTX.args.type, CTX.args.definition1.astid, CTX.args.definition2.astid, (sub) => {
 	 if (sub == null) defer.reject();
-	 else defer.resolve(AST.cast(sub));
+	 else defer.resolve(sub);
 });
 defer.promise`, 
 				fntype: 'promise', 
-				fnclass: 'Substitution', 
+				fnclass: 'object', 
 				argnum: 3, 
 				argtypes: [["type","string"], ["definition1","AST","Fragment"], ["definition2","AST","Fragment"]], 
 				modules: ['AST'], 
@@ -195,7 +196,7 @@ defer.promise`,
     	return self.apiClient.createStoredFunction(data);
     });
 
-
+/*
     // read by random value
     promises = promises.then(() => {
 	  	var data = {
@@ -209,7 +210,7 @@ DataLib.readByRandomValue((ent) => {
 });
 defer.promise`, 
 				fntype: 'promise', 
-				fnclass: 'Entry', 
+				fnclass: 'Fragment', 
 				argnum: 0, 
 				argtypes: null, 
 				modules: ['AST'], 
@@ -219,7 +220,7 @@ defer.promise`,
 
     	return self.apiClient.createStoredFunction(data);
     });
-
+*/
 
     return promises;
 
