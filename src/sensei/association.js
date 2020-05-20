@@ -52,12 +52,13 @@ else fragmentAst = AST.cast(CTX.args.application.lhsid);
 if (fragmentAst == null) defer.reject();
 else defer.resolve(fragmentAst);
 defer.promise`, 
-				fntype: 'promise', 
-				fnclass: 'AST.Fragment', 
+				fntype: 'object', 
+				fnclass: 'Fragment', 
 				argnum: 1, 
-				argtypes: [["application","AST.Application"]], 
+				argtypes: [["application","AST","Application"]], 
 				modules: null, 
-				memoize: true, 
+				memoize: true,  
+				promise: true,
 				testargs: [self.testValues.application.id]
 	  	};
 
@@ -77,12 +78,13 @@ else fragmentAst = AST.cast(CTX.args.application.rhsid);
 if (fragmentAst == null) defer.reject();
 else defer.resolve(fragmentAst);
 defer.promise`, 
-				fntype: 'promise', 
-				fnclass: 'AST.Fragment', 
+				fntype: 'object', 
+				fnclass: 'Fragment', 
 				argnum: 1, 
-				argtypes: [["application","AST.Application"]], 
+				argtypes: [["application","AST","Application"]], 
 				modules: null, 
-				memoize: true, 
+				memoize: true,   
+				promise: true,
 				testargs: [self.testValues.application.id]
 	  	};
 
@@ -102,12 +104,13 @@ else fragmentAst = AST.cast(CTX.args.application.bodyid);
 if (fragmentAst == null) defer.reject();
 else defer.resolve(fragmentAst);
 defer.promise`, 
-				fntype: 'promise', 
-				fnclass: 'AST.Fragment', 
+				fntype: 'object', 
+				fnclass: 'Fragment', 
 				argnum: 1, 
-				argtypes: [["application","AST.Abstraction"]], 
+				argtypes: [["application","AST","Abstraction"]], 
 				modules: null, 
-				memoize: true, 
+				memoize: true,   
+				promise: true,
 				testargs: [self.testValues.abstraction.id]
 	  	};
 
@@ -129,12 +132,13 @@ readByRandomValueAndType(fragmentAst, (random) => {
 });
 else defer.resolve(fragmentAst);
 defer.promise`, 
-				fntype: 'promise', 
-				fnclass: 'AST.Fragment', 
+				fntype: 'object', 
+				fnclass: 'Fragment', 
 				argnum: 1, 
-				argtypes: [["fragment","AST.Fragment"]], 
+				argtypes: [["fragment","AST","Fragment"]], 
 				modules: null, 
-				memoize: true, 
+				memoize: true,   
+				promise: true,
 				testargs: [self.testValues.abstraction.id]
 	  	};
 

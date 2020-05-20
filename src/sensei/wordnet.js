@@ -43,7 +43,8 @@ class WordnetSensei {
 				argnum: 1, 
 				argtypes: [["word","string"]], 
 				modules: null, 
-				memoize: true, 
+				memoize: true,  
+				promise: false,
 				testargs: ["test"]
 	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['definition'] = freeIdentifier }),
@@ -57,7 +58,8 @@ class WordnetSensei {
 				argnum: 1, 
 				argtypes: [["word","string"]], 
 				modules: null, 
-				memoize: true, 
+				memoize: true,  
+				promise: false,
 				testargs: ["test"]
 	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['synonym set'] = freeIdentifier }),
@@ -71,7 +73,8 @@ class WordnetSensei {
 				argnum: 1, 
 				argtypes: [["set","number"]], 
 				modules: null, 
-				memoize: true, 
+				memoize: true,  
+				promise: false,
 				testargs: [123]
 	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['element'] = freeIdentifier }),
@@ -85,7 +88,8 @@ class WordnetSensei {
 				argnum: 1, 
 				argtypes: [["synset","number"]], 
 				modules: null, 
-				memoize: true, 
+				memoize: true,  
+				promise: false,
 				testargs: [123]
 	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['part of speech'] = freeIdentifier })

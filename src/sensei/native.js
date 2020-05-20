@@ -46,6 +46,9 @@ class NativeSensei {
   	var promises = Q.fcall(() => {console.log('Establishing modules...')});
   	promises = promises.then(this.apiClient.createModule('AST', './ast'));
   	promises = promises.then(this.apiClient.createClass('Fragment', 'AST'));
+  	promises = promises.then(this.apiClient.createClass('Abstraction', 'AST'));
+  	promises = promises.then(this.apiClient.createClass('Application', 'AST'));
+  	promises = promises.then(this.apiClient.createClass('Identifier', 'AST'));
   	promises = promises.then(() => {console.log('Establishing test definitions...')});
   	promises = promises.then(() => {return self.basic()});
   	promises = promises.then(() => {console.log('Creating Auto-interface functions...')});
@@ -64,12 +67,13 @@ DataLib.readOrCreateAbstraction(CTX.args.name, CTX.args.definition2.astid, (abs)
   else defer.resolve(AST.cast(abs));
 });
 defer.promise`, 
-				fntype: 'promise', 
+				fntype: 'object', 
 				fnclass: 'Abstraction', 
 				argnum: 2, 
 				argtypes: [["name","string"], ["definition2","AST","Fragment"]], 
 				modules: ['AST'], 
 				memoize: true, 
+				promise: true,
 				testargs: ["test", self.testValues.freeIdentifier]
 	  	};
 
@@ -88,12 +92,13 @@ DataLib.readOrCreateApplication(CTX.args.definition1.astid, CTX.args.definition2
 	else defer.resolve(AST.cast(app));
 });
 defer.promise`, 
-			fntype: 'promise', 
+			fntype: 'object', 
 			fnclass: 'Application', 
 			argnum: 2, 
 			argtypes: [["definition1","AST","Fragment"], ["definition2","AST","Fragment"]], 
 			modules: ['AST'], 
-			memoize: true, 
+			memoize: true,  
+			promise: true,
 			testargs: [self.testValues.abstraction, self.testValues.freeIdentifier]
   	};
 
@@ -112,12 +117,13 @@ DataLib.readOrCreateFreeIdentifier(CTX.args.name, (identifier) => {
 	 else defer.resolve(AST.cast(identifier));
 });
 defer.promise`, 
-				fntype: 'promise', 
+				fntype: 'object', 
 				fnclass: 'Identifier', 
 				argnum: 1, 
 				argtypes: [["name","string"]], 
 				modules: ['AST'], 
-				memoize: true, 
+				memoize: true,  
+				promise: true,
 				testargs: ["test"]
 	  	};
 
@@ -141,7 +147,8 @@ defer.promise`,
 // 				argnum: 3, 
 // 				argtypes: '[["sourceid","number"], ["destinationid","number"], ["associativevalue","number"]]', 
 // 				modules: null, 
-// 				memoize: false, 
+// 				memoize: false,  
+//				promise: true,
 // 				testargs: [self.testValues.freeIdentifier), self.testValues.abstraction), 0.1]
 // 	  	};
 
@@ -160,12 +167,13 @@ DataLib.readOrCreateSubstitution(CTX.args.type, CTX.args.definition1.astid, CTX.
 	 else defer.resolve(sub);
 });
 defer.promise`, 
-				fntype: 'promise', 
-				fnclass: 'object', 
+				fntype: 'object', 
+				fnclass: null, 
 				argnum: 3, 
 				argtypes: [["type","string"], ["definition1","AST","Fragment"], ["definition2","AST","Fragment"]], 
 				modules: ['AST'], 
-				memoize: true, 
+				memoize: true,  
+				promise: true,
 				testargs: ['eta', self.testValues.application, self.testValues.freeIdentifier]
 	  	};
 
@@ -184,12 +192,13 @@ DataLib.readById(CTX.args.fragment.astid, (ent) => {
 	 else defer.resolve(AST.cast(ent));
 });
 defer.promise`, 
-				fntype: 'promise', 
-				fnclass: 'Entry', 
+				fntype: 'object', 
+				fnclass: 'Fragment', 
 				argnum: 1, 
 				argtypes: [["fragment","AST","Fragment"]], 
 				modules: ['AST'], 
-				memoize: true, 
+				memoize: true,  
+				promise: true,
 				testargs: [self.testValues.freeIdentifier]
 	  	};
 
@@ -214,7 +223,8 @@ defer.promise`,
 				argnum: 0, 
 				argtypes: null, 
 				modules: ['AST'], 
-				memoize: false, 
+				memoize: false,  
+				promise: true,
 				testargs: null
 	  	};
 

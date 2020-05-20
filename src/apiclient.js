@@ -50,7 +50,7 @@ class ApiClient {
 	    	//console.log("success:"+JSON.stringify(res.body));
 				return res.body.storedfunction;
 	    }, (res)=>{
-	    	console.log(res.message + " : " + res.response);
+	    	console.log(res.message + " : " + res.response.text);
 	    });
 	}
 

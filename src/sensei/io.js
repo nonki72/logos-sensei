@@ -41,12 +41,13 @@ global.readlineInterface.on('line', (input) => { // will append listener to inte
 });
 global.readlineInterface.prompt();
 defer.promise`, 
-				fntype: 'promise', 
-				fnclass: 'string', 
+				fntype: 'string', 
+				fnclass: null, 
 				argnum: 0, 
 				argtypes: null, 
 				modules: ['readline'], 
 				memoize: false, 
+				promise: true, 
 				testargs: null
 	  	};
 
@@ -65,7 +66,8 @@ console.log(CTX.args.line)`,
 				argnum: 1, 
 				argtypes: [["line","string"]], 
 				modules: null, 
-				memoize: false, 
+				memoize: false,  
+				promise: false,
 				testargs: ["konnichiwa sekai"]
 	  	};
 
