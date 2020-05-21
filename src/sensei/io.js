@@ -65,7 +65,7 @@ defer.promise`,
 				astid: null, 
 				fn: `
 console.log(CTX.args.line)`, 
-				fntype: undefined, 
+				fntype: 'undefined', 
 				fnclass: null, 
 				argnum: 1, 
 				argtypes: [["line","string"]], 
