@@ -52,7 +52,8 @@ else fragmentAst = AST.cast(CTX.args.application.lhsid);
 if (fragmentAst == null) defer.reject();
 else defer.resolve(fragmentAst);
 defer.promise`, 
-				fntype: 'object', 
+				fntype: 'object',  
+				fnmod: 'AST',
 				fnclass: 'Fragment', 
 				argnum: 1, 
 				argtypes: [["application","AST","Application"]], 
@@ -78,7 +79,8 @@ else fragmentAst = AST.cast(CTX.args.application.rhsid);
 if (fragmentAst == null) defer.reject();
 else defer.resolve(fragmentAst);
 defer.promise`, 
-				fntype: 'object', 
+				fntype: 'object',  
+				fnmod: 'AST',
 				fnclass: 'Fragment', 
 				argnum: 1, 
 				argtypes: [["application","AST","Application"]], 
@@ -104,7 +106,8 @@ else fragmentAst = AST.cast(CTX.args.application.bodyid);
 if (fragmentAst == null) defer.reject();
 else defer.resolve(fragmentAst);
 defer.promise`, 
-				fntype: 'object', 
+				fntype: 'object',  
+				fnmod: 'AST',
 				fnclass: 'Fragment', 
 				argnum: 1, 
 				argtypes: [["application","AST","Abstraction"]], 
@@ -132,7 +135,8 @@ readByRandomValueAndType(fragmentAst, (random) => {
 });
 else defer.resolve(fragmentAst);
 defer.promise`, 
-				fntype: 'object', 
+				fntype: 'object',  
+				fnmod: 'AST',
 				fnclass: 'Fragment', 
 				argnum: 1, 
 				argtypes: [["fragment","AST","Fragment"]], 
