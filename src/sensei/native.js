@@ -67,7 +67,8 @@ DataLib.readOrCreateAbstraction(CTX.args.name, CTX.args.definition2.astid, (abs)
   else defer.resolve(AST.cast(abs));
 });
 defer.promise`, 
-				fntype: 'object', 
+				fntype: 'object',  
+				fnmod: 'AST',
 				fnclass: 'Abstraction', 
 				argnum: 2, 
 				argtypes: [["name","string"], ["definition2","AST","Fragment"]], 
@@ -92,7 +93,8 @@ DataLib.readOrCreateApplication(CTX.args.definition1.astid, CTX.args.definition2
 	else defer.resolve(AST.cast(app));
 });
 defer.promise`, 
-			fntype: 'object', 
+			fntype: 'object',  
+			fnmod: 'AST',
 			fnclass: 'Application', 
 			argnum: 2, 
 			argtypes: [["definition1","AST","Fragment"], ["definition2","AST","Fragment"]], 
@@ -117,7 +119,8 @@ DataLib.readOrCreateFreeIdentifier(CTX.args.name, (identifier) => {
 	 else defer.resolve(AST.cast(identifier));
 });
 defer.promise`, 
-				fntype: 'object', 
+				fntype: 'object',  
+				fnmod: 'AST',
 				fnclass: 'Identifier', 
 				argnum: 1, 
 				argtypes: [["name","string"]], 
@@ -161,19 +164,24 @@ defer.promise`,
 				astid: null, 
 				fn: `
 var defer = Q.defer();
-DataLib.readOrCreateSubstitution(CTX.args.type, CTX.args.definition1.astid, CTX.args.definition2.astid, (sub) => {
+var type;
+if (typof CTX.args.type == 'AlphaSubstitution') type = 'alpha';
+elseif (typof CTX.args.type == 'BetaSubstitution') type = 'beta';
+else type = 'eta';
+DataLib.readOrCreateSubstitution(type, CTX.args.definition1.astid, CTX.args.definition2.astid, (sub) => {
 	 if (sub == null) defer.reject();
 	 else defer.resolve(sub);
 });
 defer.promise`, 
 				fntype: 'object', 
-				fnclass: null, 
+				fnmod: 'AST',
+				fnclass: 'Substitution', 
 				argnum: 3, 
-				argtypes: [["type","string"], ["definition1","AST","Fragment"], ["definition2","AST","Fragment"]], 
+				argtypes: [["type","object","AST","Substitution"], ["definition1","object","AST","Fragment"], ["definition2","object","AST","Fragment"]], 
 				modules: ['AST'], 
 				memoize: true,  
 				promise: true,
-				testargs: ['eta', self.testValues.application, self.testValues.freeIdentifier]
+				testargs: [new AST.EtaSubstitution(), self.testValues.application, self.testValues.freeIdentifier]
 	  	};
 
     	return self.apiClient.createStoredFunction(data);
@@ -191,10 +199,11 @@ DataLib.readById(CTX.args.fragment.astid, (ent) => {
 	 else defer.resolve(AST.cast(ent));
 });
 defer.promise`, 
-				fntype: 'object', 
+				fntype: 'object',  
+				fnmod: 'AST',
 				fnclass: 'Fragment', 
 				argnum: 1, 
-				argtypes: [["fragment","AST","Fragment"]], 
+				argtypes: [["fragment","object","AST","Fragment"]], 
 				modules: ['AST'], 
 				memoize: true,  
 				promise: true,

@@ -155,7 +155,7 @@ class WordnetSensei {
 
         // teach routine for a word
 				var teachPromise = (obj) => {
-					var word = obj.word;
+					var word = obj.word.replace(/_/g,' ');
 					var results = obj.results;
 					// store words
 			    return Promise.all(results.map((result) => {
