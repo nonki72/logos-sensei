@@ -17,11 +17,11 @@ class AssociationSensei {
   	return self.apiClient.createFreeIdentifier("test").then((freeIdentifier) => {
 	  	return self.apiClient.createAbstraction("test", freeIdentifier.id).then((abstraction) => {
 		  	return self.apiClient.createApplication(abstraction.id, freeIdentifier.id).then((application) => {
-			  	return self.apiClient.createSubstitution("eta", application.id, freeIdentifier.id).then((substiution) => {
+			  	return self.apiClient.createSubstitution("eta", application.id, freeIdentifier.id).then((substitution) => {
 		  			self.testValues["freeIdentifier"] = freeIdentifier;
 		  			self.testValues["abstraction"] = abstraction;
 		  			self.testValues["application"] = application;
-		  			self.testValues["substiution"] = substiution;
+		  			self.testValues["substitution"] = substitution;
 		  			return self.testValues;
 			  	})
 		  	})

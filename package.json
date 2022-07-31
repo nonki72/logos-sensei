@@ -27,6 +27,7 @@
     "q-map": "^0.2.0",
     "service-js": "0.0.1",
     "superagent-q": "0.0.3",
+    "twitter-api-v2": "^1.12.3",
     "wndb-with-exceptions": "^3.0.2",
     "xhr2": "^0.1.4"
   }

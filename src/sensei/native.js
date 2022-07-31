@@ -149,7 +149,6 @@ defer.promise`,
 // 				modules: null, 
 // 				memoize: false,  
 //				promise: true,
-// 				testargs: [self.testValues.freeIdentifier), self.testValues.abstraction), 0.1]
 // 	  	};
 
 //     	return self.apiClient.createStoredFunction(data);
