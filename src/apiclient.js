@@ -54,12 +54,13 @@ class ApiClient {
 	    });
 	}
 
-	createStoredValue(name, type, klass, value) {
+	createStoredValue(name, type, mod, klass, value) {
 		var data = {
 			name: name,
 			astid: null,
 			fn: value,
 			fntype: type,
+			fnmod: mod,
 			fnclass: klass,
 			argnum: null,
 			argtypes: null,

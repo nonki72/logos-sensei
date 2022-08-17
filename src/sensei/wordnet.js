@@ -7,7 +7,7 @@ const WordNet = require('node-wordnet');
 
 const suffixes = ['adj', 'adv', 'noun', 'verb'];
 
-const basicPOS = {n:'noun', v:'verb', a:'adjective', r:'adverb', s:'adjective satellite'};
+const basicPOS = {n:'noun', v:'verb', a:'adjective', r:'adverb', s:'adjectiveSatellite'};
 const basicFunctions = ['definition', 'synonym set', 'element', 'part of speech'];
 
 /* Wordnet identifier names
@@ -129,7 +129,8 @@ class WordnetSensei {
 			return lineReaderPromise(filepath, function(line) {
 				if (line.substr(0,1) == ' ') return;
 				var word = line.substr(0, line.indexOf(' '));
-				words.push(word);
+				var obj = {word: word, synsetType: suffix}
+				words.push(obj);
 				// if (words.length % 200 == 0) deferred.notify(words.length);
 			}).then(() => {
 				console.log("Completed reading suffix " + suffix + ", count: " + words.length);
@@ -155,7 +156,8 @@ class WordnetSensei {
 
         // teach routine for a word
 				var teachPromise = (obj) => {
-					var word = obj.word.replace(/_/g,' ');
+					var word = obj.word.word.replace(/_/g,' ');
+					var posClass = suffixToClass(obj.word.synsetType);
 					var results = obj.results;
 					// store words
 			    return Promise.all(results.map((result) => {
@@ -168,7 +170,7 @@ class WordnetSensei {
 		        // console.log(result.gloss);
 						process.stdout.write(word+'..');
 		        // sub: (synset $word) -> $synset
-		    		return self.apiClient.createStoredValue("WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 'string', null, '"'+word+'"')
+		    		return self.apiClient.createStoredValue("WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 'object','Grammar', posClass, '"'+word+'"')
 			    	  .then((freeIdentifierWord) => {
 			    		return self.apiClient.createApplication(self.basicFunctionInstances['synonym set'].id, freeIdentifierWord.id)
 			    		   .then((applicationSynsetWord) => {
@@ -190,15 +192,15 @@ class WordnetSensei {
 
         // for each word
         // (wordnet lib's lookupAsync() is somehow faulty.. use deferred instead to make it a promise)
-		    return Promise.map(words, (word) => {
+		    return Promise.map(words, (obj) => {
 		    	  var lookupPromise = new Promise((resolve, reject) => {
-		    	  	self.wordnet.lookup(word, (err, results) => {
+		    	  	self.wordnet.lookup(obj.word, (err, results) => {
 			    	  	if (err) reject(err);
 			    	  	else resolve(results);
 		    	  	});
 		    	  });
 		    	  return lookupPromise
-		    	  .then((results) => {return Promise.resolve({word: word, results: results})})
+		    	  .then((results) => {return Promise.resolve({word: obj, results: results})})
 		    	  .then(teachPromise)
 		    }, {concurrency: 5});
     	});
@@ -229,4 +231,20 @@ function wordsToChunks(words) {
 		wordsChunks.push(wordsChunk);
   }
   return wordsChunks;
+}
+
+function suffixToClass(pos) {
+	if (pos == 'noun') return 'Noun';
+	if (pos == 'verb') return 'Verb';
+	if (pos == 'adj') return 'Adjective';
+	if (pos == 'adv') return 'Adverb';
+}
+
+// not currently used. see grammar.js in 'logos' project
+function posToClass(pos) {
+	if (pos == 'noun') return 'Noun';
+	if (pos == 'verb') return 'Verb';
+	if (pos == 'adjective') return 'Adjective';
+	if (pos == 'adverb') return 'Adverb';
+	if (pos == 'adjective satellite') return 'AdjectiveSatellite';
 }
