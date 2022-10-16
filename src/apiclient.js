@@ -3,7 +3,7 @@
 var XMLHttpRequest = require('xhr2');
 var XMLHttpRequestUpload = XMLHttpRequest.XMLHttpRequestUpload;
 var request = require('superagent-q');
- 
+
 class ApiClient {
 
 	constructor(hostname) {
@@ -20,6 +20,17 @@ class ApiClient {
 		oReq.send();
 	}
 
+	readWordFrequency(name) {
+		return request.get(this.hostname + "/api/frequency/" + name)
+			.end()
+			.then(function(res) {
+				if (!res.ok) throw new Error(res.status);
+				return res.body.word;
+			}, (res)=>{
+				console.log(res.message + " : " + res.response);
+			});
+	}
+
   readFreeIdentifier(name) {
 	  return request.get(this.hostname + "/api/function/" + name)
 	  .end()
@@ -30,6 +41,7 @@ class ApiClient {
     	console.log(res.message + " : " + res.response);
     });
   }
+
 
 // attributes of 'data':
       // name
@@ -138,6 +150,17 @@ class ApiClient {
 	    }, (res)=>{
 	    	console.log(res.message + " : " + res.response);
 	    });
+	}
+
+	createWordFrequency(name, freq) {
+		const nameEscaped = encodeURI(name);
+		return request.post(this.hostname + "/api/frequency/" + nameEscaped)
+			.send({'freq': freq}).end()
+			.then(function(res) {
+				if (!res.ok) throw new Error(res.status);
+				console.log("success:"+JSON.stringify(res.body));
+				return res.body.word;
+			});
 	}
 
 	createFreeIdentifier(name) {

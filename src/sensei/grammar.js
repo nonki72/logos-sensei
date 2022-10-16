@@ -1,9 +1,6 @@
 'use strict';
 var Promise = require("bluebird");
 const async = require('async');
-const wndb = require('wndb-with-exceptions');
-const WordNet = require('node-wordnet');
-const Grammar = require('../../../logos/src/grammar');
 
 class GrammarSensei {
 
@@ -37,9 +34,9 @@ class GrammarSensei {
                 astid: null,
                 fn: `
 var defer = Q.defer();
-const phrase = Grammar.treeToString(Grammar.generatePhrase());
+const phrase = Grammar.treeToString(Grammar.generateSentence());
 if (phrase == null) {
-    return defer.reject('no phrase generated');
+    return defer.reject('no sentence generated');
 } else {
     defer.resolve(phrase);
 }
