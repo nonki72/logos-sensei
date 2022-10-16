@@ -97,7 +97,7 @@ class WordnetSensei {
 
   	// basic part-of-speech
   	// TODO make this a stored function and apply them to the words below
-  	var basicPromises = Object.keys(basicPOS).reduce((accumulator, basicPosAbbreviation) => {
+  	var basicPromises2 = Object.keys(basicPOS).reduce((accumulator, basicPosAbbreviation) => {
   		const basicPosWord = basicPOS[basicPosAbbreviation];
   		return accumulator.concat([
   			self.apiClient.createStoredValue("WordnetPos"+basicPosAbbreviation.toUpperCase(), 'string', null, '"'+basicPosWord+'"')
@@ -106,7 +106,7 @@ class WordnetSensei {
 
   	}, basicPromises);
 
-    return Promise.all(basicPromises);
+    return Promise.all(basicPromises2);
 
   }
 

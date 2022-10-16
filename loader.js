@@ -7,11 +7,12 @@ const IoSensei = require('./src/sensei/io');
 const NativeSensei = require('./src/sensei/native');
 const AssociationSensei = require('./src/sensei/association');
 const TwitterSensei = require('./src/sensei/twitter');
-const WordnetSensei = require('./src/sensei/wordnet');
 const GrammarSensei = require('./src/sensei/grammar');
+const WordFreqSensei = require('./src/sensei/wordfreq.js');
+const WordnetSensei = require('./src/sensei/wordnet');
 
 // order in which to run sensei's
-var services = ['IoSensei', 'NativeSensei', 'AssociationSensei', 'TwitterSensei', 'WordnetSensei', 'GrammarSensei'];
+var services = ['IoSensei', 'NativeSensei', 'AssociationSensei', 'TwitterSensei', 'GrammarSensei', 'WordFreqSensei', 'WordnetSensei'];
 
 // API Client Service
 var ApiClientService = Object.create(Services.Service);
@@ -73,18 +74,6 @@ TwitterSenseiService.isUsable = function() {
 };
 Services.register('TwitterSensei', TwitterSenseiService);
 
-// Wordnet Sensei
-var WordnetSenseiService = Object.create(Services.Service);
-WordnetSenseiService.onStart = function() {
-	return Services.ready('ApiClient').spread((apiClient) => {
-	  WordnetSenseiService.service = new WordnetSensei.WordnetSensei(apiClient.service);
-	});
-}
-WordnetSenseiService.isUsable = function() {
-  return Services.ready('ApiClient');
-};
-Services.register('WordnetSensei', WordnetSenseiService);
-
 // Grammar Sensei
 var GrammarSenseiService = Object.create(Services.Service);
 GrammarSenseiService.onStart = function() {
@@ -96,6 +85,31 @@ GrammarSenseiService.isUsable = function() {
 	return Services.ready('ApiClient');
 };
 Services.register('GrammarSensei', GrammarSenseiService);
+
+// WordFreq Sensei
+var WordFreqSenseiService = Object.create(Services.Service);
+WordFreqSenseiService.onStart = function() {
+	return Services.ready('ApiClient').spread((apiClient) => {
+		WordFreqSenseiService.service = new WordFreqSensei.WordFreqSensei(apiClient.service);
+	});
+}
+WordFreqSenseiService.isUsable = function() {
+	return Services.ready('ApiClient');
+};
+Services.register('WordFreqSensei', WordFreqSenseiService);
+
+
+// Wordnet Sensei
+var WordnetSenseiService = Object.create(Services.Service);
+WordnetSenseiService.onStart = function() {
+	return Services.ready('ApiClient').spread((apiClient) => {
+	  WordnetSenseiService.service = new WordnetSensei.WordnetSensei(apiClient.service);
+	});
+}
+WordnetSenseiService.isUsable = function() {
+  return Services.ready('ApiClient');
+};
+Services.register('WordnetSensei', WordnetSenseiService);
 
 
 
