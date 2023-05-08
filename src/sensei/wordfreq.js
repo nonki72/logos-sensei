@@ -1,7 +1,6 @@
 'use strict';
 var Promise = require("bluebird");
 const fs = require('fs');
-const async = require('async');
 
 const columns = ['rank', 'word', 'freq', '#texts', '%caps', 'blog', 'web', 'TVM', 'spok', 'fic', 'mag', 'news', 'acad', 'blogPM', 'webPM', 'TVMPM', 'spokPM', 'ficPM', 'magPM', 'newsPM', 'acadPM'];
 
@@ -58,21 +57,20 @@ class WordFreqSensei {
             return Promise.resolve(words);
         });
 
-        // begin teaching
-        promises = promises
-            .then((words) => {console.log('Starting WordFreq simple teaching program...'); return Promise.resolve(words)})
-            .then((words) => {
+         // begin teaching
+         promises = promises
+         .then((words) => {console.log('Starting WordFreq simple teaching program...'); return Promise.resolve(words)})
+         .then((words) => {
 
-                // teach routine for a word frequency
-                // store words with frequency
-                return Promise.all(words.map((word) => {
-                    console.log(word.word+'..');
+             // teach routine for a word frequency
+             // store words with frequency
+             return Promise.all(words.map((word) => {
+                 console.log(word.word+'...');
 
-                    return self.apiClient.createWordFrequency(word.word, word.freq);
-                }));
+                 return self.apiClient.createWordFrequency(word.word, word.freq);
+             }));
 
-            });
-
+         });
         return promises;
     }
 

@@ -155,7 +155,7 @@ class ApiClient {
 	createWordFrequency(name, freq) {
 		const nameEscaped = encodeURI(name);
 		return request.post(this.hostname + "/api/frequency/" + nameEscaped)
-			.send({'freq': freq}).end()
+			.send({freq: freq}).end()
 			.then(function(res) {
 				if (!res.ok) throw new Error(res.status);
 				console.log("success:"+JSON.stringify(res.body));
