@@ -8,13 +8,20 @@ const NativeSensei = require('./src/sensei/native');
 const AssociationSensei = require('./src/sensei/association');
 const TwitterSensei = require('./src/sensei/twitter');
 const GrammarSensei = require('./src/sensei/grammar');
-const WordFreqSensei = require('./src/sensei/wordfreq.js');
+const WordFreqSensei = require('./src/sensei/wordfreq');
 const WordnetSensei = require('./src/sensei/wordnet');
 
-// order in which to run sensei's
-var services = ['IoSensei', 'NativeSensei', 'AssociationSensei', 'TwitterSensei', 'GrammarSensei', 'WordFreqSensei', 'WordnetSensei'];
+// Mapping of names to Senseis
+const senseisConstructorMap = {}
+senseisConstructorMap['IoSensei'] = IoSensei.IoSensei;
+senseisConstructorMap['NativeSensei'] = NativeSensei.NativeSensei;
+senseisConstructorMap['AssociationSensei'] = AssociationSensei.AssociationSensei;
+senseisConstructorMap['TwitterSensei'] = TwitterSensei.TwitterSensei;
+senseisConstructorMap['GrammarSensei'] = GrammarSensei.GrammarSensei;
+senseisConstructorMap['WordFreqSensei'] = WordFreqSensei.WordFreqSensei;
+senseisConstructorMap['WordnetSensei'] = WordnetSensei.WordnetSensei;
 
-// API Client Service
+// API Client Service needed by all Senseis
 var ApiClientService = Object.create(Services.Service);
 ApiClientService.service = new ApiClient.ApiClient("http://localhost:9001");
 ApiClientService.isUsable = function() {
@@ -23,96 +30,46 @@ ApiClientService.isUsable = function() {
 Services.register('ApiClient', ApiClientService);
 
 
-// ##### Sensei's #######
-
-// I/O Sensei
-var IoSenseiService = Object.create(Services.Service);
-IoSenseiService.onStart = function() {
-	return Services.ready('ApiClient').spread((apiClient) => {
-	  IoSenseiService.service = new IoSensei.IoSensei(apiClient.service);
-	});
+// order in which to run Senseis
+var senseis = [];
+if (process.argv.length > 2) {
+    // Command Line Argument to run only one Sensei
+	const senseiNames = Object.keys(senseisConstructorMap);
+    const indexOfArgSensei = senseiNames.indexOf(process.argv[2]);
+	if (indexOfArgSensei == -1) {
+		console.error("Sensei name " + process.argv[2] + " not found! Use name type 'ExampleSensei'.");
+		process.exit(1);
+	}
+	const senseiName = senseiNames[indexOfArgSensei];
+	senseis.push(senseiName);
+} else {
+	// default to run all Senseis
+	senseis.push(
+		'IoSensei', 
+		'NativeSensei', 
+		'AssociationSensei', 
+		'TwitterSensei', 
+		'GrammarSensei', 
+		'WordFreqSensei', 
+		'WordnetSensei'
+	);
 }
-IoSenseiService.isUsable = function() {
-  return Services.ready('ApiClient');
-};
-Services.register('IoSensei', IoSenseiService);
 
-
-// Native Sensei
-var NativeSenseiService = Object.create(Services.Service);
-NativeSenseiService.onStart = function() {
-	return Services.ready('ApiClient').spread((apiClient) => {
-	  NativeSenseiService.service = new NativeSensei.NativeSensei(apiClient.service);
-	});
+// store the sensei services so they are accessible programatically
+for (const senseiNameIndex in senseis) {
+	const senseiName = senseis[senseiNameIndex];
+	var service = Object.create(Services.Service);
+	var senseisConstructor = senseisConstructorMap[senseiName];
+	service.onStart = function() {
+		return Services.ready('ApiClient').spread((apiClient) => {
+		service.service = new senseisConstructor(apiClient.service);
+		});
+	}
+	service.isUsable = function() {
+		return Services.ready('ApiClient');
+	};
+	Services.register(senseiName, service);
 }
-NativeSenseiService.isUsable = function() {
-  return Services.ready('ApiClient');
-};
-Services.register('NativeSensei', NativeSenseiService);
-
-// Association Sensei
-var AssociationSenseiService = Object.create(Services.Service);
-AssociationSenseiService.onStart = function() {
-	return Services.ready('ApiClient').spread((apiClient) => {
-	  AssociationSenseiService.service = new AssociationSensei.AssociationSensei(apiClient.service);
-	});
-}
-AssociationSenseiService.isUsable = function() {
-  return Services.ready('ApiClient');
-};
-Services.register('AssociationSensei', AssociationSenseiService);
-
-// Twitter Sensei
-var TwitterSenseiService = Object.create(Services.Service);
-TwitterSenseiService.onStart = function() {
-	return Services.ready('ApiClient').spread((apiClient) => {
-		TwitterSenseiService.service = new TwitterSensei.TwitterSensei(apiClient.service);
-	});
-}
-TwitterSenseiService.isUsable = function() {
-	return Services.ready('ApiClient');
-};
-Services.register('TwitterSensei', TwitterSenseiService);
-
-// Grammar Sensei
-var GrammarSenseiService = Object.create(Services.Service);
-GrammarSenseiService.onStart = function() {
-	return Services.ready('ApiClient').spread((apiClient) => {
-		GrammarSenseiService.service = new GrammarSensei.GrammarSensei(apiClient.service);
-	});
-}
-GrammarSenseiService.isUsable = function() {
-	return Services.ready('ApiClient');
-};
-Services.register('GrammarSensei', GrammarSenseiService);
-
-// WordFreq Sensei
-var WordFreqSenseiService = Object.create(Services.Service);
-WordFreqSenseiService.onStart = function() {
-	return Services.ready('ApiClient').spread((apiClient) => {
-		WordFreqSenseiService.service = new WordFreqSensei.WordFreqSensei(apiClient.service);
-	});
-}
-WordFreqSenseiService.isUsable = function() {
-	return Services.ready('ApiClient');
-};
-Services.register('WordFreqSensei', WordFreqSenseiService);
-
-
-// Wordnet Sensei
-var WordnetSenseiService = Object.create(Services.Service);
-WordnetSenseiService.onStart = function() {
-	return Services.ready('ApiClient').spread((apiClient) => {
-	  WordnetSenseiService.service = new WordnetSensei.WordnetSensei(apiClient.service);
-	});
-}
-WordnetSenseiService.isUsable = function() {
-  return Services.ready('ApiClient');
-};
-Services.register('WordnetSensei', WordnetSenseiService);
-
-
-
 
 // Initialization
 Services.start();
@@ -143,21 +100,9 @@ function startUp() {
 
   // iterate through services array and attempt to create teaching promise chain
   // and add it to the main promise chain
-	services.forEach((serviceName) => {
-		startService.call(null, serviceName, promise);
+	senseis.forEach((senseiName) => {
+		startService.call(null, senseiName, promise);
 	});
-	// Services.ready('WordnetSensei').spread(function(wordnetSensei) {
-	//   wordnetSensei.service.teach();
-	// }, () => {
-	// 	console.log('.');
-	// 	setTimeout(startUp, 500);
-	// });
-	// Services.ready('NativeSensei').spread(function(nativeSensei) {
-	//   nativeSensei.service.teach();
-	// }, () => {
-	// 	console.log('.');
-	// 	setTimeout(startUp, 500);
-	// });
 }
 
 startUp();
