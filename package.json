@@ -18,8 +18,9 @@
   },
   "homepage": "https://github.com/jcote/logos-sensei#readme",
   "dependencies": {
-    "async": "^2.5.0",
+    "async": "^3.2.4",
     "bluebird": "^3.5.0",
+    "https": "^1.0.0",
     "line-reader": "^0.4.0",
     "mongodb": "^3.5.7",
     "node-wordnet": "^0.1.12",

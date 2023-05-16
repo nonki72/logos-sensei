@@ -30,6 +30,26 @@ class WordFreqSensei {
 
         var promises = new Promise((resolve) => {console.log('Establishing basic definitions...'); resolve()})
         promises = promises.then(() => {return this.basic()});
+
+
+        //  // test mongodb
+        //  promises = promises
+        //  .then(() => {
+        //      console.log('testing mongodb...');
+             
+        //      // teach routine for a word frequency
+        //      // store words with frequency
+        //      return Promise.all(self.wordz.map((word) => {
+        //          console.log(word.word+'...');
+
+        //          return self.apiClient.createWordFrequency(word.word, word.freq);
+        //      }));
+
+        //  });
+
+
+
+
         promises = promises.then(() => {console.log('Reading wordfreq corpus...')});
 
         // read words straight from the indexes
@@ -46,8 +66,10 @@ class WordFreqSensei {
                 const freq = split[2];
                 var obj = {word: word, freq: freq}
                 words.push(obj);
+                process.stdout.write('.');
             });
-
+            
+            console.log('done');
             return words;
 
         };
@@ -64,13 +86,13 @@ class WordFreqSensei {
 
              // teach routine for a word frequency
              // store words with frequency
-             return Promise.all(words.map((word) => {
-                 console.log(word.word+'...');
-
-                 return self.apiClient.createWordFrequency(word.word, word.freq);
-             }));
-
+             for (const index in words) {
+                const word = words[index];
+                console.log(word.word+'...');
+                self.apiClient.createWordFrequency(word.word, word.freq);
+             }
          });
+
         return promises;
     }
 

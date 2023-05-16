@@ -23,7 +23,7 @@ senseisConstructorMap['WordnetSensei'] = WordnetSensei.WordnetSensei;
 
 // API Client Service needed by all Senseis
 var ApiClientService = Object.create(Services.Service);
-ApiClientService.service = new ApiClient.ApiClient("http://localhost:9001");
+ApiClientService.service = new ApiClient.ApiClient("http://127.0.0.1:9001");
 ApiClientService.isUsable = function() {
   return Q.nbind(this.service.healthCheck, this.service);
 };
