@@ -29,7 +29,7 @@ class WordFreqSensei {
 
 
     teach() {
-var self = this;
+        var self = this;
 
         var optionsArray = [];
         for (let i = 0; i < 100; i++) {
