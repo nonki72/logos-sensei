@@ -3,7 +3,6 @@
 var XMLHttpRequest = require('xhr2');
 var XMLHttpRequestUpload = XMLHttpRequest.XMLHttpRequestUpload;
 var request = require('superagent-q');
-const http = require('http');
 
 class ApiClient {
 
@@ -155,30 +154,13 @@ class ApiClient {
 
 	createWordFrequency(name, freq) {
 		const nameEscaped = encodeURI(name);
-				
-		var options = {
-			hostname: '127.0.0.1',
-			port: 9001,
-			path: "/api/frequency/" + nameEscaped,
-			method: 'post',
-			headers: {
-					"content-type": "application/json",
-				}
-				
-		};
-		var req = http.request(options, function(res) {
-			console.log('Status: ' + res.statusCode);
-			console.log('Headers: ' + JSON.stringify(res.headers));
-			res.setEncoding('utf8');
-			res.on('data', function (body) {
-				console.log('Body: ' + body); 
+		return request.post(this.hostname + "/api/frequency/" + nameEscaped)
+			.send({'freq': freq}).end()
+			.then(function(res) {
+				if (!res.ok) throw new Error(res.status);
+				console.log("success:"+JSON.stringify(res.body));
+				return res.body.word;
 			});
-		});
-		req.on('error', function(e) {
-			console.log('problem with request: ' + e.message);
-		});
-		req.write('{ "freq" : '+freq+' }',);
-		req.end();
 	}
 
 	createFreeIdentifier(name) {
