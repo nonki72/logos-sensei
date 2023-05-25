@@ -1,77 +1,104 @@
 'use strict';
-var Promise = require("bluebird");
-const { promises } = require("dns");
 const fs = require('fs');
-const ApiClient = require('../apiclient');
+const Q = require('q');
+var http = require('http');
 
 const columns = ['rank', 'word', 'freq', '#texts', '%caps', 'blog', 'web', 'TVM', 'spok', 'fic', 'mag', 'news', 'acad', 'blogPM', 'webPM', 'TVMPM', 'spokPM', 'ficPM', 'magPM', 'newsPM', 'acadPM'];
 
 class WordFreqSensei {
 
-    constructor(apiClient) {
-        this.apiClient = new ApiClient.ApiClient("http://127.0.0.1:9001");
+    constructor() {
+        this.wordsCount = 0;
+        this.wordObjs = [];
+        this.readWordsCount = 0;
+        this.writeWordsCount = 0;
+        this.writeWordsCountSub = 0;
+        this.promises = Q();
+        this.promise = Q.defer();
     }
 
-    // set up basic Diary entries (free identifiers) that are used extensively by this sensei
-    // just ensure that they exist
-    basic() {
+    createWordFrequency(name, freq) {
         var self = this;
-        self.basicPOSInstances = {};
-        self.basicFunctionInstances= {};
-
+        const nameEscaped = encodeURI(name);
+                    
+        var options = {
+            hostname: '127.0.0.1',
+            port: 9001,
+            path: "/api/frequency/" + nameEscaped,
+            method: 'post',
+            headers: {
+                    "content-type": "application/json",
+                }
+                
+        };
+        var req = http.request(options, function(res) {
+            console.log('Status: ' + res.statusCode);
+            console.log('Headers: ' + JSON.stringify(res.headers));
+            res.setEncoding('utf8');
+            res.on('data', function (body) {
+                console.log('Body: ' + body); 
+                self.writeWordsCount++;
+                self.writeWordsCountSub++;
+            });
+        });
+        req.on('error', function(e) {
+            console.log('problem with request: ' + e.message);
+        });
+        req.write('{ "freq" : '+freq+' }');
+        req.end();
     }
 
-    // parse through the Wordnet indexes and use the JS Wordnet library API to look up each entry's details
-    // add all relevent data to the Diary
+    waitSub() {
+        if (this.writeWordsCountSub <= 99) {
+            setTimeout(this.waitSub.bind(this), 10); 
+        } else {
+            this.writeWordsCountSub = 0;
+            this.teachSub();
+        }
+        if (this.writeWordsCount >= this.readWordsCount) {
+            this.promise.resolve();
+        }
+    }
+
+    teachSub() {
+        for(var i = 0; i < 100; i++) {
+            var obj = this.wordObjs[this.readWordsCount++];
+            console.log(">"+obj.word);
+            setTimeout(this.createWordFrequency.bind(this,obj.word,obj.freq),10);
+        };
+        setTimeout(this.waitSub.bind(this), 10); 
+        return this.promise.promise;
+    }
+
     teach() {
         var self = this;
-
-        self.basic();
-
-        self.promises = new Promise(()=>{Promise.resolve()});
-
         console.log('Starting WordFreq simple teaching program...');
+  
         console.log('Reading wordfreq corpus...');
 
         // read words straight from the corpus
         // TODO: (use them to perform wordnet lookup)
         const filepath = __dirname + '/../../corpus/words_219k_m2355.txt';
-        self.wordsCount = 0;
 
         const file = fs.readFileSync(filepath, 'utf-8');
-        file.split(/\r?\n/).every((line) =>  {
+        file.split(/\r?\n/).forEach((line) =>  {
             const split = line.split('\t');
             if (split.length == 0) return;
             const word = split[1];
             const freq = split[2];
             var obj = {word: word, freq: freq}
+            self.wordObjs.push(obj);
             self.wordsCount++;
-            console.log(">"+word);
-            var promise = self.apiClient.createWordFrequency(obj.word,obj.freq);
-            promise.then(
-                function(value) { 
-                    console.log(obj); 
-                },
-                function(error) { 
-                    console.log(err); 
-                }
-            );
-            self.promises = self.promises.then(promise);
-            if (self.wordsCount > 100) return false;
-            return true;
-            
         });
-        
-        console.log('done');
-        
-        console.log("Completed reading word frequencies, count: " + self.wordsCount);
+        console.log('Done, count: ' + self.wordsCount);
+        self.promises = self.promises.then(new Promise((resolve) => {console.log('Completed teaching word frequencies setup.'); resolve()}));
 
+        self.promises = self.promises.then(this.teachSub());
+
+        
         return self.promises;
     }
-
 }
-var wfs = new WordFreqSensei();
-wfs.teach();
 
 
 exports.WordFreqSensei = WordFreqSensei;
