@@ -4,8 +4,9 @@ const Q = require('q');
 var http = require('http');
 
 const columns = ['rank', 'word', 'freq', '#texts', '%caps', 'blog', 'web', 'TVM', 'spok', 'fic', 'mag', 'news', 'acad', 'blogPM', 'webPM', 'TVMPM', 'spokPM', 'ficPM', 'magPM', 'newsPM', 'acadPM'];
+const maxFreq = 50074257;
 
-class WordFreqSensei {
+class WordFreqCorpSensei {
 
     constructor() {
         this.wordsCount = 0;
@@ -86,7 +87,8 @@ class WordFreqSensei {
             if (split.length == 0) return;
             const word = split[1];
             const freq = split[2];
-            var obj = {word: word, freq: freq}
+            const frequency = freq / maxFreq;
+            var obj = {word: word, freq: frequency}
             self.wordObjs.push(obj);
             self.wordsCount++;
         });
@@ -101,4 +103,4 @@ class WordFreqSensei {
 }
 
 
-exports.WordFreqSensei = WordFreqSensei;
+exports.WordFreqCorpSensei = WordFreqCorpSensei;
