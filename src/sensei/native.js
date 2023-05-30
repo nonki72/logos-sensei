@@ -20,6 +20,8 @@ class NativeSensei {
   basic() {
   	return promises;
   }
+  
+  /*
   basic() {
   	var self = this;
 
@@ -39,6 +41,7 @@ class NativeSensei {
 	  	})
   	});
   }
+  */
 
   teach() {
   	var self = this;

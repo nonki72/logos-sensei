@@ -31,6 +31,18 @@ class ApiClient {
 			});
 	}
 
+	// 'float' should be in [0.0 .. 1.0]
+	readWordFrequencyAtLeast(float) {
+		return request.get(this.hostname + "/api/frequency/atleast/" + float)
+			.end()
+			.then(function(res) {
+				if (!res.ok) throw new Error(res.status);
+				return res.body.word;
+			}, (res)=>{
+				console.log(res.message + " : " + res.response);
+			});
+	}
+
   readFreeIdentifier(name) {
 	  return request.get(this.hostname + "/api/function/" + name)
 	  .end()

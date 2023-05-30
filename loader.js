@@ -8,7 +8,8 @@ const NativeSensei = require('./src/sensei/native');
 const AssociationSensei = require('./src/sensei/association');
 const TwitterSensei = require('./src/sensei/twitter');
 const GrammarSensei = require('./src/sensei/grammar');
-const WordFreqSensei = require('./src/sensei/wordfreq');
+const WordFreqFuncSensei = require('./src/sensei/wordfreqfunc');
+const WordFreqCorpSensei = require('./src/sensei/wordfreqcorp');
 const WordnetSensei = require('./src/sensei/wordnet');
 
 // Mapping of names to Senseis
@@ -18,7 +19,8 @@ senseisConstructorMap['NativeSensei'] = NativeSensei.NativeSensei;
 senseisConstructorMap['AssociationSensei'] = AssociationSensei.AssociationSensei;
 senseisConstructorMap['TwitterSensei'] = TwitterSensei.TwitterSensei;
 senseisConstructorMap['GrammarSensei'] = GrammarSensei.GrammarSensei;
-senseisConstructorMap['WordFreqSensei'] = WordFreqSensei.WordFreqSensei;
+senseisConstructorMap['WordFreqFuncSensei'] = WordFreqFuncSensei.WordFreqFuncSensei;
+senseisConstructorMap['WordFreqCorpSensei'] = WordFreqCorpSensei.WordFreqCorpSensei;
 senseisConstructorMap['WordnetSensei'] = WordnetSensei.WordnetSensei;
 
 // API Client Service needed by all Senseis
