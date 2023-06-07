@@ -170,7 +170,13 @@ class WordnetSensei {
 		        // console.log(result.gloss);
 						process.stdout.write(word+'..');
 		        // sub: (synset $word) -> $synset
-		    		return self.apiClient.createStoredValue("WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 'object','Grammar', posClass, '"'+word+'"')
+		    		return self.apiClient.createStoredValue(
+							"WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 
+							'object',
+							'Grammar', 
+							posClass, 
+							'"'+word+'"'
+						)
 			    	  .then((freeIdentifierWord) => {
 			    		return self.apiClient.createApplication(self.basicFunctionInstances['synonym set'].id, freeIdentifierWord.id)
 			    		   .then((applicationSynsetWord) => {
