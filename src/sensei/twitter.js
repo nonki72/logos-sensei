@@ -1,5 +1,6 @@
 'use strict';
 var Promise = require("bluebird");
+const twitterConfig = require('../../keys/twitter.json');
 
 class TwitterSensei {
     constructor(apiClient) {
@@ -32,12 +33,7 @@ class TwitterSensei {
                 astid: null,
                 fn: `
 const  {TwitterApi} =  require('twitter-api-v2');
-const client = new TwitterApi({
-    appKey: '',
-    appSecret: '',
-    accessToken: '',
-    accessSecret: ''
-});
+const client = new TwitterApi(${JSON.stringify(twitterConfig)});
 
 const rwClient = client.readWrite
 
