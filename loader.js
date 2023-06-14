@@ -4,10 +4,10 @@ const Q = require('q');
 const Services = require('service-js');
 const ApiClient = require('./src/apiclient');
 const IoSensei = require('./src/sensei/io');
-const NativeSensei = require('./src/sensei/native');
 const AssociationSensei = require('./src/sensei/association');
-const TwitterSensei = require('./src/sensei/twitter');
+const NativeSensei = require('./src/sensei/native');
 const GrammarSensei = require('./src/sensei/grammar');
+const TwitterSensei = require('./src/sensei/twitter');
 const WordFreqFuncSensei = require('./src/sensei/wordfreqfunc');
 const WordFreqCorpSensei = require('./src/sensei/wordfreqcorp');
 const WordnetSensei = require('./src/sensei/wordnet');
@@ -15,10 +15,10 @@ const WordnetSensei = require('./src/sensei/wordnet');
 // Mapping of names to Senseis
 const senseisConstructorMap = {}
 senseisConstructorMap['IoSensei'] = IoSensei.IoSensei;
-senseisConstructorMap['NativeSensei'] = NativeSensei.NativeSensei;
 senseisConstructorMap['AssociationSensei'] = AssociationSensei.AssociationSensei;
-senseisConstructorMap['TwitterSensei'] = TwitterSensei.TwitterSensei;
+senseisConstructorMap['NativeSensei'] = NativeSensei.NativeSensei;
 senseisConstructorMap['GrammarSensei'] = GrammarSensei.GrammarSensei;
+senseisConstructorMap['TwitterSensei'] = TwitterSensei.TwitterSensei;
 senseisConstructorMap['WordFreqFuncSensei'] = WordFreqFuncSensei.WordFreqFuncSensei;
 senseisConstructorMap['WordFreqCorpSensei'] = WordFreqCorpSensei.WordFreqCorpSensei;
 senseisConstructorMap['WordnetSensei'] = WordnetSensei.WordnetSensei;
@@ -46,29 +46,28 @@ if (process.argv.length > 2) {
 	senseis.push(senseiName);
 } else {
 	// default to run all Senseis
-	senseis.push(
+	senseis =[
 		'IoSensei', 
+		'AssociationSensei',
 		'NativeSensei', 
-		'AssociationSensei', 
+		'GrammarSensei',  
 		'TwitterSensei', 
-		'GrammarSensei', 
-		'WordFreqSensei', 
 		'WordnetSensei'
-	);
+	];
 }
 
 // store the sensei services so they are accessible programatically
 for (const senseiNameIndex in senseis) {
 	const senseiName = senseis[senseiNameIndex];
 	var service = Object.create(Services.Service);
-	var senseisConstructor = senseisConstructorMap[senseiName];
+	var senseiConstructor = senseisConstructorMap[senseiName];
 	service.onStart = function() {
 		return Services.ready('ApiClient').spread((apiClient) => {
-		service.service = new senseisConstructor(apiClient.service);
+			service.service = new senseiConstructor(apiClient.service);
 		});
 	}
 	service.isUsable = function() {
-		return Services.ready('ApiClient');
+		return (Services.ready('ApiClient'));
 	};
 	Services.register(senseiName, service);
 }
@@ -87,18 +86,21 @@ function startUp() {
 		promise.chain = promise.chain.then(() => {
 			console.log("========= Starting Sensei Service '" + serviceName + "'... =========")
 		}).then(() => {
-			return Services.ready(serviceName)
-			      .spread((senseiService) => {
+			try {
+				var readyServices = Services.ready(serviceName);
+				return readyServices.spread((senseiService) => {
 		          return senseiService.service.teach()
 						}, () => {
 							console.log('.');
-							setTimeout(startService, 500, serviceName, promise);
 						}).then(() => {
 							console.log("========= Sensei Service '" + serviceName + "' finished. =========")
 						})
+			} catch (reason) {
+				console.error("Couldn't load service, Reason: " + reason);
+				setTimeout(startService, 500, serviceName, promise);
+			}
 		});
-		promise.chain.done();
-	};
+	}
 
   // iterate through services array and attempt to create teaching promise chain
   // and add it to the main promise chain

@@ -171,16 +171,15 @@ class WordnetSensei {
 						process.stdout.write(word+'..');
 		        // sub: (synset $word) -> $synset
 		    		return self.apiClient.createStoredValue(
-							"WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 
-							'object',
-							'Grammar', 
-							posClass, 
-							'"'+word+'"'
-						)
+						"WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 
+						'object',
+						'Grammar', 
+						posClass, 
+						'"'+word+'"')
 			    	  .then((freeIdentifierWord) => {
 			    		return self.apiClient.createApplication(self.basicFunctionInstances['synonym set'].id, freeIdentifierWord.id)
 			    		   .then((applicationSynsetWord) => {
-			    	    return self.apiClient.createStoredValue("WordnetSynset" + numToLetters(result.synsetOffset), 'number', null, parseInt(result.synsetOffset))
+			    	    return self.apiClient.createStoredValue("WordnetSynset" + numToLetters(result.synsetOffset), 'number', null, null, parseInt(result.synsetOffset))
 			    	      .then((freeIdentifierSynset) => {
 			    		    return self.apiClient.createSubstitution('eta', applicationSynsetWord.id, freeIdentifierSynset.id)
 			    		      .then((substiution1) => {
