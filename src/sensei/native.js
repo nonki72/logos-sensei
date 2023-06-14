@@ -17,11 +17,7 @@ class NativeSensei {
   	this.testValues = {};
   }
 
-  basic() {
-  	return promises;
-  }
   
-  /*
   basic() {
   	var self = this;
 
@@ -41,7 +37,6 @@ class NativeSensei {
 	  	})
   	});
   }
-  */
 
   teach() {
   	var self = this;
@@ -52,6 +47,10 @@ class NativeSensei {
   	promises = promises.then(this.apiClient.createClass('Abstraction', 'AST'));
   	promises = promises.then(this.apiClient.createClass('Application', 'AST'));
   	promises = promises.then(this.apiClient.createClass('Identifier', 'AST'));
+  	promises = promises.then(this.apiClient.createClass('Substitution', 'AST'));
+  	promises = promises.then(this.apiClient.createClass('AlphaSubstitution', 'AST'));
+  	promises = promises.then(this.apiClient.createClass('BetaSubstitution', 'AST'));
+  	promises = promises.then(this.apiClient.createClass('EtaSubstitution', 'AST'));
   	promises = promises.then(() => {console.log('Establishing test definitions...')});
   	promises = promises.then(() => {return self.basic()});
   	promises = promises.then(() => {console.log('Creating Auto-interface functions...')});
@@ -60,6 +59,7 @@ class NativeSensei {
 
 	  // create abstraction
   	promises = promises.then(() => {
+		console.log('---NativeFuncReadOrCreateAbstraction---');
 	  	var data = {
 				name: 'NativeFuncReadOrCreateAbstraction',
 				astid: null, 
@@ -86,7 +86,8 @@ defer.promise`,
 
     // create application
     promises = promises.then(() => {
-  	var data = {
+		console.log('---NativeFuncReadOrCreateApplication---');
+		var data = {
 			name: 'NativeFuncReadOrCreateApplication',
 			astid: null, 
 			fn: `
@@ -105,13 +106,14 @@ defer.promise`,
 			memoize: true,  
 			promise: true,
 			testargs: [self.testValues.abstraction, self.testValues.freeIdentifier]
-  	};
+  		};
 
 		return self.apiClient.createStoredFunction(data);
 	});
 
     // create free identifier
     promises = promises.then(() => {
+		console.log('---NativeFuncReadOrCreateFreeIdentifier---');
 	  	var data = {
 				name: 'NativeFuncReadOrCreateFreeIdentifier',
 				astid: null, 
@@ -138,7 +140,8 @@ defer.promise`,
 
     // create association
 //     promises = promises.then(() => {
-// 	  	var data = {
+// 	  	console.log('---NativeFuncReadOrCreateAssociation---');
+//		var data = {
 // 				name: 'NativeFuncReadOrCreateAssociation',
 // 				astid: null, 
 // 				fn: `
@@ -162,17 +165,15 @@ defer.promise`,
 
     // create substitution
     promises = promises.then(() => {
+		console.log('---NativeFuncReadOrCreateSubstitution---');
 	  	var data = {
 				name: 'NativeFuncReadOrCreateSubstitution',
 				astid: null, 
 				fn: `
 var defer = Q.defer();
-var type;
-if (typof CTX.args.type == 'AlphaSubstitution') type = 'alpha';
-elseif (typof CTX.args.type == 'BetaSubstitution') type = 'beta';
-else type = 'eta';
-DataLib.readOrCreateSubstitution(type, CTX.args.definition1.astid, CTX.args.definition2.astid, (sub) => {
-	 if (sub == null) defer.reject();
+if (!['alpha','beta','eta'].includes(CTX.args.type)) defer.reject("bad type: " + CTX.args.type);
+DataLib.readOrCreateSubstitution(CTX.args.type, CTX.args.definition1.astid, CTX.args.definition2.astid, (sub) => {
+	 if (sub == null) defer.reject("no sub made");
 	 else defer.resolve(sub);
 });
 defer.promise`, 
@@ -180,11 +181,11 @@ defer.promise`,
 				fnmod: 'AST',
 				fnclass: 'Substitution', 
 				argnum: 3, 
-				argtypes: [["type","object","AST","Substitution"], ["definition1","object","AST","Fragment"], ["definition2","object","AST","Fragment"]], 
+				argtypes: [["type","string"], ["definition1","object","AST","Fragment"], ["definition2","object","AST","Fragment"]], 
 				modules: ['AST'], 
 				memoize: true,  
 				promise: true,
-				testargs: [new AST.EtaSubstitution(), self.testValues.application, self.testValues.freeIdentifier]
+				testargs: ['eta', self.testValues.application, self.testValues.freeIdentifier]
 	  	};
 
     	return self.apiClient.createStoredFunction(data);
@@ -192,6 +193,7 @@ defer.promise`,
 
     // read by id
     promises = promises.then(() => {
+		console.log('---NativeFuncReadById---');
 	  	var data = {
 				name: 'NativeFuncReadById',
 				astid: null, 
@@ -219,6 +221,7 @@ defer.promise`,
 /*
     // read by random value
     promises = promises.then(() => {
+		console.log('---NativeFuncReadByRandomValue---')
 	  	var data = {
 				name: 'NativeFuncReadByRandomValue',
 				astid: null, 

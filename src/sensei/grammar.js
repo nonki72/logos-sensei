@@ -1,5 +1,5 @@
 'use strict';
-var Promise = require("bluebird");
+var Q = require("q");
 const async = require('async');
 
 class GrammarSensei {
