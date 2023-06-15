@@ -9,8 +9,8 @@ class TwitterSensei {
 
 
     basic() {
-//        var promises = this.apiClient.createModule('twitter-api-v2', 'twitter-api-v2');
-        return [];
+        var promises = this.apiClient.createModule('twitter-api-v2', 'twitter-api-v2');
+        return promises;
     }
 
     teach() {

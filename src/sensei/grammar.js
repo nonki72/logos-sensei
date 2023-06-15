@@ -34,14 +34,15 @@ class GrammarSensei {
                 astid: null,
                 fn: `
 var defer = Q.defer();
-const phrase = Grammar.treeToString(Grammar.generateSentence());
-if (phrase == null) {
-    return defer.reject('no sentence generated');
-} else {
-    defer.resolve(phrase);
-}
-defer.promise
-`,
+defer.promise.then(
+    Q.nfcall(Grammar.generateSentence)
+     .done((tree) => {
+        const sentence = Grammar.treeToString(tree);
+        if (sentence == null) return defer.reject("no sentence generated");
+        else defer.resolve(sentence);    
+    })
+);
+defer.promise`,
                 fntype: 'string',
                 fnclass: null,
                 argnum: 0,
