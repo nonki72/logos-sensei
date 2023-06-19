@@ -2,3 +2,5 @@ node_modules
 *.log
 config.json
 data
+env.sh
+keys/*.json
