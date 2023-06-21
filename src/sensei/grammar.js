@@ -15,10 +15,16 @@ class GrammarSensei {
     teach() {
         const self = this;
 
+        self.basic();
+
         var promises = Q.fcall(() => {
             console.log('Establishing modules...')
         });
         promises = promises.then(this.apiClient.createModule('Grammar', './grammar'));
+
+        promises = promises.then(() => {
+            console.log('Establishing classes...')
+        })
         promises = promises.then(this.apiClient.createClass('Noun', 'Grammar'));
         promises = promises.then(this.apiClient.createClass('Verb', 'Grammar'));
         promises = promises.then(this.apiClient.createClass('Adjective', 'Grammar'));
@@ -26,8 +32,8 @@ class GrammarSensei {
         promises = promises.then(this.apiClient.createClass('AdjectiveSatellite', 'Grammar'));
 
         promises = promises.then(() => {
-            return self.basic()
-        });
+            console.log('Establishing functions...')
+        })
         promises = promises.then(() => {
             self.apiClient.createStoredFunction({
                 name: 'GrammarGenerateSentence',
@@ -55,7 +61,7 @@ defer.promise`,
 
             return promises;
         });
-    }s
+    }
 }
 
 exports.GrammarSensei = GrammarSensei;
