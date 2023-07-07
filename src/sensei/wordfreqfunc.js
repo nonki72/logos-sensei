@@ -4,10 +4,6 @@ Q.map = require('q-map').map;
 const async = require('async');
 const AST = require('../../../logos/src/ast');
 
-/* Native identifier names
- *
- * NativeFunc*
- */
 
 class WordFreqFuncSensei {
 

@@ -7,7 +7,9 @@ const IoSensei = require('./src/sensei/io');
 const AssociationSensei = require('./src/sensei/association');
 const NativeSensei = require('./src/sensei/native');
 const GrammarSensei = require('./src/sensei/grammar');
+const DataTypeSensei = require('./src/sensei/datatype');
 const TwitterSensei = require('./src/sensei/twitter');
+const NlpCloudSensei = require('./src/sensei/nlpcloud');
 const WordFreqFuncSensei = require('./src/sensei/wordfreqfunc');
 const WordFreqCorpSensei = require('./src/sensei/wordfreqcorp');
 const WordnetSensei = require('./src/sensei/wordnet');
@@ -18,7 +20,9 @@ senseisConstructorMap['IoSensei'] = IoSensei.IoSensei;
 senseisConstructorMap['AssociationSensei'] = AssociationSensei.AssociationSensei;
 senseisConstructorMap['NativeSensei'] = NativeSensei.NativeSensei;
 senseisConstructorMap['GrammarSensei'] = GrammarSensei.GrammarSensei;
+senseisConstructorMap['DataTypeSensei'] = DataTypeSensei.DataTypeSensei;
 senseisConstructorMap['TwitterSensei'] = TwitterSensei.TwitterSensei;
+senseisConstructorMap['NlpCloudSensei'] = NlpCloudSensei.NlpCloudSensei;
 senseisConstructorMap['WordFreqFuncSensei'] = WordFreqFuncSensei.WordFreqFuncSensei;
 senseisConstructorMap['WordFreqCorpSensei'] = WordFreqCorpSensei.WordFreqCorpSensei;
 senseisConstructorMap['WordnetSensei'] = WordnetSensei.WordnetSensei;
@@ -45,14 +49,15 @@ if (process.argv.length > 2) {
 	const senseiName = senseiNames[indexOfArgSensei];
 	senseis.push(senseiName);
 } else {
-	// default to run all Senseis
+	// default Senseis to run
 	senseis =[
 		'IoSensei', 
 		'AssociationSensei',
 		'NativeSensei', 
-		'GrammarSensei',  
+		'GrammarSensei', 
+		'DataTypeSensei',  
 		'TwitterSensei', 
-		'WordnetSensei'
+		'NlpCloudSensei'
 	];
 }
 

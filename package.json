@@ -24,6 +24,7 @@
     "https": "^1.0.0",
     "line-reader": "^0.4.0",
     "mongodb": "^3.5.7",
+    "nlpcloud": "^1.0.47",
     "node-wordnet": "^0.1.12",
     "q": "^1.5.1",
     "q-map": "^0.2.0",
