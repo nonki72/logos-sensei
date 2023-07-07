@@ -38,12 +38,15 @@ class NlpCloudSensei {
 			  astid: null, 
 			  fn: `
 var defer = Q.defer();
+console.log("KWARG:"+JSON.stringify(CTX.args.phrase));
 const client = new nlpcloud('fast-gpt-j','${nlpcloudConfig.apiKey}', true);
 client.kwKpExtraction(CTX.args.phrase)
   .then(function (response) {
+	console.log("KWRESPONSE:"+JSON.stringify(response.data));
 	defer.resolve(response.data.keywords_and_keyphrases);
   }).catch(function (err) {
-	defer.reject(err.response.status + ", " + err.response.data.detail);
+	console.log("KWREJECT:"+JSON.stringify(err));
+	defer.reject(err);
   });
 defer.promise`, 
 			  fntype: 'object', 
