@@ -197,16 +197,25 @@ class WordnetSensei {
 
         // for each word
         // (wordnet lib's lookupAsync() is somehow faulty.. use deferred instead to make it a promise)
-		    return Promise.map(words, (obj) => {
+		    return Promise.map(words, async (obj) => {
 		    	  var lookupPromise = new Promise((resolve, reject) => {
 		    	  	self.wordnet.lookup(obj.word, (err, results) => {
 			    	  	if (err) reject(err);
 			    	  	else resolve(results);
 		    	  	});
 		    	  });
+
+				  // make sure this has a frequency entry in wordfreq db
+				  // TODO: append frequency to the wordnet object
+				  var frequency = await self.apiClient.readWordFrequency(obj.word);
+				  if (frequency == null) {
+					process.stdout.write(obj.word+'..');
+					return null;
+				  }
+
 		    	  return lookupPromise
-		    	  .then((results) => {return Promise.resolve({word: obj, results: results})})
-		    	  .then(teachPromise)
+					.then((results) => {return Promise.resolve({word: obj, results: results})})
+					.then(teachPromise)
 		    }, {concurrency: 5});
     	});
 
