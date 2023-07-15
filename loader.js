@@ -11,7 +11,8 @@ const DataTypeSensei = require('./src/sensei/datatype');
 const TwitterSensei = require('./src/sensei/twitter');
 const NlpCloudSensei = require('./src/sensei/nlpcloud');
 const WordFreqFuncSensei = require('./src/sensei/wordfreqfunc');
-const WordFreqCorpSensei = require('./src/sensei/wordfreqcorp');
+const WordFreqCorpSensei60k = require('./src/sensei/wordfreqcorp60k');
+const WordFreqCorpSensei219k = require('./src/sensei/wordfreqcorp219k');
 const WordnetSensei = require('./src/sensei/wordnet');
 
 // Mapping of names to Senseis
@@ -24,7 +25,8 @@ senseisConstructorMap['DataTypeSensei'] = DataTypeSensei.DataTypeSensei;
 senseisConstructorMap['TwitterSensei'] = TwitterSensei.TwitterSensei;
 senseisConstructorMap['NlpCloudSensei'] = NlpCloudSensei.NlpCloudSensei;
 senseisConstructorMap['WordFreqFuncSensei'] = WordFreqFuncSensei.WordFreqFuncSensei;
-senseisConstructorMap['WordFreqCorpSensei'] = WordFreqCorpSensei.WordFreqCorpSensei;
+senseisConstructorMap['WordFreqCorpSensei60k'] = WordFreqCorpSensei60k.WordFreqCorpSensei60k;
+senseisConstructorMap['WordFreqCorpSensei219k'] = WordFreqCorpSensei219k.WordFreqCorpSensei219k;
 senseisConstructorMap['WordnetSensei'] = WordnetSensei.WordnetSensei;
 
 // API Client Service needed by all Senseis
@@ -60,6 +62,12 @@ if (process.argv.length > 2) {
 		'NlpCloudSensei'
 	];
 }
+var args;
+if (process.argv.length > 3) {
+    // Command Line Argument passed to sensei
+	args = process.argv.slice(3,process.argv.length);
+
+}
 
 // store the sensei services so they are accessible programatically
 for (const senseiNameIndex in senseis) {
@@ -94,7 +102,7 @@ function startUp() {
 			try {
 				var readyServices = Services.ready(serviceName);
 				return readyServices.spread((senseiService) => {
-		          return senseiService.service.teach()
+		          return senseiService.service.teach(args)
 						}, () => {
 							console.log('.');
 						}).then(() => {
