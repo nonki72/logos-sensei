@@ -30,8 +30,17 @@ class DataTypeSensei {
   	var promises = Q.fcall(() => {console.log('Establishing modules...')});
   	promises = promises.then(() => {console.log('Establishing test definitions...')});
   	promises = promises.then(() => {return self.basic()});
-  	promises = promises.then(() => {console.log('Creating inter data type functions...')});
+	  promises = promises.then(() => {
+		console.log('Establishing modules...')
+	})
+	promises = promises.then(this.apiClient.createModule('JS', ''));
+	promises = promises.then(() => {
+		console.log('Establishing classes...')
+	})
+	promises = promises.then(this.apiClient.createClass('Array', 'JS'));
   	promises = promises.then(() => {console.log(self.testValues)});
+	  promises = promises.then(() => {console.log('Creating inter data type functions...')});
+
 
 
 	  // select topic
