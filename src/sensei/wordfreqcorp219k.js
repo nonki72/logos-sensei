@@ -6,7 +6,7 @@ var http = require('http');
 const columns = ['rank', 'word', 'freq', '#texts', '%caps', 'blog', 'web', 'TVM', 'spok', 'fic', 'mag', 'news', 'acad', 'blogPM', 'webPM', 'TVMPM', 'spokPM', 'ficPM', 'magPM', 'newsPM', 'acadPM'];
 const maxFreq = 50074257;
 
-class WordFreqCorpSensei {
+class WordFreqCorpSensei219k {
 
     constructor() {
         this.wordsCount = 0;
@@ -103,4 +103,4 @@ class WordFreqCorpSensei {
 }
 
 
-exports.WordFreqCorpSensei = WordFreqCorpSensei;
+exports.WordFreqCorpSensei219k = WordFreqCorpSensei219k;

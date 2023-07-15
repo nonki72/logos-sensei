@@ -18,6 +18,14 @@ const basicFunctions = ['definition', 'synonym set', 'element', 'part of speech'
  * WordnetSynset*
  */
 
+function strikeThrough(text) {
+	return text
+	  .split('')
+	  .map(char => char + '\u0336')
+	  .join('')
+  }
+  
+
 class WordnetSensei {
 
   constructor(apiClient) {
@@ -112,8 +120,12 @@ class WordnetSensei {
 
   // parse through the Wordnet indexes and use the JS Wordnet library API to look up each entry's details
   // add all relevent data to the Diary
-  teach() {
+  teach(args) {
 	  var self = this;
+
+	  var skip = 0; // how many words to skip
+	  if (args) skip = args[0];
+	  var count = 0;
 
   	var promises = new Promise((resolve) => {console.log('Establishing basic definitions...'); resolve()})
   	promises = promises.then(() => {return this.basic()});
@@ -123,7 +135,7 @@ class WordnetSensei {
     // (use them to perform lookup)
 		var getWordsPromise = (suffix) => {
 			var filepath = wndb.path + '/index.' + suffix;
-      var words = [];
+            var words = [];
 
 			var lineReaderPromise = Promise.promisify(lineReader.eachLine);
 			return lineReaderPromise(filepath, function(line) {
@@ -168,7 +180,7 @@ class WordnetSensei {
 		        // console.log(result.synonyms);
 		        // console.log(result.pos);
 		        // console.log(result.gloss);
-						process.stdout.write(word+'..');
+						process.stdout.write("["+obj.word.synsetType+"]"+word+'..');
 		        // sub: (synset $word) -> $synset
 		    		return self.apiClient.createStoredValue(
 						"WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 
@@ -198,6 +210,10 @@ class WordnetSensei {
         // for each word
         // (wordnet lib's lookupAsync() is somehow faulty.. use deferred instead to make it a promise)
 		    return Promise.map(words, async (obj) => {
+				  count++;
+				  console.log("("+count+")");
+				  if (count <= skip) return null;
+
 		    	  var lookupPromise = new Promise((resolve, reject) => {
 		    	  	self.wordnet.lookup(obj.word, (err, results) => {
 			    	  	if (err) reject(err);
@@ -209,7 +225,7 @@ class WordnetSensei {
 				  // TODO: append frequency to the wordnet object
 				  var frequency = await self.apiClient.readWordFrequency(obj.word);
 				  if (frequency == null) {
-					process.stdout.write(obj.word+'..');
+					process.stdout.write(strikeThrough(obj.word+'..'));
 					return null;
 				  }
 
