@@ -2,7 +2,7 @@
 const Q = require('q');
 Q.map = require('q-map').map;
 const async = require('async');
-const AST = require('../../../logos/src/ast');
+const AST = require('../../../logos-ai/src/ast');
 
 /* Native identifier names
  *
