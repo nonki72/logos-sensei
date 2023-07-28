@@ -26,7 +26,7 @@ senseisConstructorMap['TwitterSensei'] = TwitterSensei.TwitterSensei;
 senseisConstructorMap['NlpCloudSensei'] = NlpCloudSensei.NlpCloudSensei;
 senseisConstructorMap['WordFreqFuncSensei'] = WordFreqFuncSensei.WordFreqFuncSensei;
 senseisConstructorMap['WordFreqCorpSensei60k'] = WordFreqCorpSensei60k.WordFreqCorpSensei60k;
-senseisConstructorMap['WordFreqCorpSensei219	k'] = WordFreqCorpSensei219k.WordFreqCorpSensei219k;
+senseisConstructorMap['WordFreqCorpSensei219k'] = WordFreqCorpSensei219k.WordFreqCorpSensei219k;
 senseisConstructorMap['WordnetSensei'] = WordnetSensei.WordnetSensei;
 
 // API Client Service needed by all Senseis

@@ -172,7 +172,7 @@ class WordnetSensei {
 					var posClass = suffixToClass(obj.word.synsetType);
 					var results = obj.results;
 					// store words
-			    return Promise.all(results.map((result) => {
+			    return Promise.all(results.map(async (result) => {
 		        // console.log('------------------------------------');
 		        // console.log(result.synsetOffset);
 		        // console.log(result.pos);
@@ -180,30 +180,30 @@ class WordnetSensei {
 		        // console.log(result.synonyms);
 		        // console.log(result.pos);
 		        // console.log(result.gloss);
-						process.stdout.write("["+obj.word.synsetType+"]"+word+'..');
+					process.stdout.write("["+obj.word.synsetType+"]"+word+'..');
 		        // sub: (synset $word) -> $synset
-		    		return self.apiClient.createStoredValue(
+		    		return await self.apiClient.createStoredValue(
 						"WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 
 						'object',
 						'Grammar', 
 						posClass, 
 						'"'+word+'"')
-			    	  .then((freeIdentifierWord) => {
-			    		return self.apiClient.createApplication(self.basicFunctionInstances['synonym set'].id, freeIdentifierWord.id)
-			    		   .then((applicationSynsetWord) => {
-			    	    return self.apiClient.createStoredValue("WordnetSynset" + numToLetters(result.synsetOffset), 'number', null, null, parseInt(result.synsetOffset))
-			    	      .then((freeIdentifierSynset) => {
-			    		    return self.apiClient.createSubstitution('eta', applicationSynsetWord.id, freeIdentifierSynset.id)
-			    		      .then((substiution1) => {
+			    	  .then(async (freeIdentifierWord) => {
+			    		return await self.apiClient.createApplication(self.basicFunctionInstances['synonym set'].id, freeIdentifierWord.id)
+			    		   .then(async (applicationSynsetWord) => {
+			    	    return await self.apiClient.createStoredValue("WordnetSynset" + numToLetters(result.synsetOffset), 'number', null, null, parseInt(result.synsetOffset))
+			    	      .then(async (freeIdentifierSynset) => {
+			    		    return await self.apiClient.createSubstitution('eta', applicationSynsetWord.id, freeIdentifierSynset.id)
+			    		      .then(async (substiution1) => {
 			    		    	// sub: (element $synset) -> word
-			    		    	return self.apiClient.createApplication(self.basicFunctionInstances['element'].id, freeIdentifierSynset.id)
-			    		    	  .then((applicationElementSynset) => {
-			    		    	  return self.apiClient.createSubstitution('eta', applicationElementSynset.id, freeIdentifierWord.id);
+			    		    	return await self.apiClient.createApplication(self.basicFunctionInstances['element'].id, freeIdentifierSynset.id)
+			    		    	  .then(async (applicationElementSynset) => {
+			    		    	  return await self.apiClient.createSubstitution('eta', applicationElementSynset.id, freeIdentifierWord.id);
 			    		    	});
 			    		    });
 			    		  });
 			    		});
-				    });//.then(()=>{process.stdout.write('=')});
+				    });
 			    }));
         };
 
@@ -217,7 +217,7 @@ class WordnetSensei {
 		    	  var lookupPromise = new Promise((resolve, reject) => {
 		    	  	self.wordnet.lookup(obj.word, (err, results) => {
 			    	  	if (err) reject(err);
-			    	  	else resolve(results);
+			    	  	else resolve([results[0]]); // only taking the first definition for now...
 		    	  	});
 		    	  });
 
@@ -225,11 +225,11 @@ class WordnetSensei {
 				  // TODO: append frequency to the wordnet object
 				  var frequency = await self.apiClient.readWordFrequency(obj.word);
 				  if (frequency == null) {
-					process.stdout.write(strikeThrough(obj.word+'..'));
+					process.stdout.write(strikeThrough(obj.word)+'..');
 					return null;
 				  }
 
-		    	  return lookupPromise
+		    	  return await lookupPromise
 					.then((results) => {return Promise.resolve({word: obj, results: results})})
 					.then(teachPromise)
 		    }, {concurrency: 1});
