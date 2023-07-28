@@ -232,7 +232,7 @@ class WordnetSensei {
 		    	  return lookupPromise
 					.then((results) => {return Promise.resolve({word: obj, results: results})})
 					.then(teachPromise)
-		    }, {concurrency: 5});
+		    }, {concurrency: 1});
     	});
 
     return promises;
