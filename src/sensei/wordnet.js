@@ -180,6 +180,10 @@ class WordnetSensei {
 		        // console.log(result.synonyms);
 		        // console.log(result.pos);
 		        // console.log(result.gloss);
+					if (result == null) {
+						console.error("No result for " + word);
+						return null;
+					}
 					process.stdout.write("["+obj.word.synsetType+"]"+word+'..');
 		        // sub: (synset $word) -> $synset
 		    		return await self.apiClient.createStoredValue(
