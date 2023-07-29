@@ -26,6 +26,7 @@
     "mongodb": "^3.5.7",
     "nlpcloud": "^1.0.47",
     "node-wordnet": "^0.1.12",
+    "openai": "^3.3.0",
     "q": "^1.5.1",
     "q-map": "^0.2.0",
     "q-superagent": "^1.0.1",
