@@ -10,6 +10,7 @@ const GrammarSensei = require('./src/sensei/grammar');
 const DataTypeSensei = require('./src/sensei/datatype');
 const TwitterSensei = require('./src/sensei/twitter');
 const NlpCloudSensei = require('./src/sensei/nlpcloud');
+const OpenAiSensei = require('./src/sensei/openai');
 const WordFreqFuncSensei = require('./src/sensei/wordfreqfunc');
 const WordFreqCorpSensei60k = require('./src/sensei/wordfreqcorp60k');
 const WordFreqCorpSensei219k = require('./src/sensei/wordfreqcorp219k');
@@ -24,6 +25,7 @@ senseisConstructorMap['GrammarSensei'] = GrammarSensei.GrammarSensei;
 senseisConstructorMap['DataTypeSensei'] = DataTypeSensei.DataTypeSensei;
 senseisConstructorMap['TwitterSensei'] = TwitterSensei.TwitterSensei;
 senseisConstructorMap['NlpCloudSensei'] = NlpCloudSensei.NlpCloudSensei;
+senseisConstructorMap['OpenAiSensei'] = OpenAiSensei.OpenAiSensei;
 senseisConstructorMap['WordFreqFuncSensei'] = WordFreqFuncSensei.WordFreqFuncSensei;
 senseisConstructorMap['WordFreqCorpSensei60k'] = WordFreqCorpSensei60k.WordFreqCorpSensei60k;
 senseisConstructorMap['WordFreqCorpSensei219k'] = WordFreqCorpSensei219k.WordFreqCorpSensei219k;
@@ -59,7 +61,7 @@ if (process.argv.length > 2) {
 		'GrammarSensei', 
 		'DataTypeSensei',  
 		'TwitterSensei', 
-		'NlpCloudSensei'
+		'OpenAiSensei', 
 	];
 }
 var args;
