@@ -4,7 +4,7 @@ const Q = require('q');
 var http = require('http');
 const brain = require('brain.js');
 
-class HatsuneMiku {
+class HatsuneMikuSensei {
 
     constructor() {
         this.promises = Q();
@@ -15,20 +15,20 @@ class HatsuneMiku {
         console.log('Starting Hatsune Miku neural network teaching program...');
 
         // args
-        var maxLines = 100;
-        var maxIterations = 1500;
-        if (args.length < 2) {
+        var maxLines = 50;
+        var maxIterations = 100;
+        if (args == undefined || args.length < 2) {
             console.log("Takes 2 arguments: maxLines maxIterations (outputFilename)");
-            console.log("Defaulting to 100 1500 ./corpus/hatsune_miku_lyrics_4k.txt");
+            console.log("Defaulting to 50 100 ./data/hatsune-training-data.json");
         } else {
             maxLines = args[0];
             maxIterations = args[1];    
         }
         var outputFilename;
-        if (args.length > 2) {
+        if (args != undefined && args.length > 2) {
             outputFilename = args[2];
         } else {
-            outputFilename = "/../../data/hatsune-training-data.json"
+            outputFilename = "./data/hatsune-training-data.json"
         }
 
         // read
@@ -61,7 +61,7 @@ class HatsuneMiku {
         const trainingOutputData = lstm.toJSON();
 
         // create training data fragment
-        promises = promises.then(() => {
+        self.promises = self.promises.then(() => {
             console.log('---HatsuneMikuTrainingDataLyrics---');
             var data = {
                     name: 'HatsuneMikuTrainingDataLyrics',
@@ -91,4 +91,4 @@ class HatsuneMiku {
 }
 
 
-exports.HatsuneMiku = HatsuneMiku;
+exports.HatsuneMikuSensei = HatsuneMikuSensei;
