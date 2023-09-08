@@ -1,4 +1,5 @@
 'use strict';
+const openaiConfig = require('../../keys/openai.json');
 const Q = require('q');
 Q.map = require('q-map').map;
 
@@ -34,7 +35,7 @@ class OpenAiSensei {
 var defer = Q.defer();
 console.log("GCARG:" + JSON.stringify(CTX.args.phrase));
 const configuration = new openai.Configuration({
-	apiKey: process.env.OPENAI_API_KEY,
+	apiKey: '${openaiConfig.apiKey}',
 });
 const openaiapi = new openai.OpenAIApi(configuration);
 async function run() {
@@ -88,7 +89,7 @@ defer.promise`,
 var defer = Q.defer();
 console.log("KWARG:" + JSON.stringify(CTX.args.phrase));
 const configuration = new openai.Configuration({
-	apiKey: process.env.OPENAI_API_KEY,
+	apiKey: '${openaiConfig.apiKey}',
 });
 const openaiapi = new openai.OpenAIApi(configuration);
 async function run() {

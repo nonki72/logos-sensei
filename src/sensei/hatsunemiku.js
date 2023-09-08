@@ -3,13 +3,16 @@ const fs = require('fs');
 const Q = require('q');
 var http = require('http');
 const brain = require('brain.js');
+var zlib = require('zlib');
+
 
 class HatsuneMikuSensei {
 
-    constructor() {
+    constructor(apiClient) {
         this.promises = Q();
+        this.apiClient = apiClient;
     }
-
+  
     teach(args) {
         var self = this;
         console.log('Starting Hatsune Miku neural network teaching program...');
@@ -58,32 +61,23 @@ class HatsuneMikuSensei {
         });
 
         // store
-        const trainingOutputData = lstm.toJSON();
+        const trainingOutputData = JSON.stringify(lstm.toJSON());
+        var trainingOutputDataZ64 = zlib.deflateSync(trainingOutputData).toString('base64');
+//        let trainingOutputDataZBin = Buffer.from(trainingOutputDataZ64, 'base64');
+
+
 
         // create training data fragment
         self.promises = self.promises.then(() => {
             console.log('---HatsuneMikuTrainingDataLyrics---');
-            var data = {
-                    name: 'HatsuneMikuTrainingDataLyrics',
-                    astid: null, 
-                    fn: trainingOutputData, 
-                    fntype: 'object',
-                    argnum: 0, 
-                    argtypes: [], 
-                    modules: [], 
-                    memoize: false, 
-                    promise: false
-            };
 
-            return self.apiClient.createStoredFunction(data);
+            return self.apiClient.createStoredValue('HatsuneMikuTrainingDataLyrics', 'string', null, null, trainingOutputDataZ64);
         });
 
 
 
 
         self.promises = self.promises.then(new Promise((resolve) => {console.log('Completed teaching hatsune miku neural network training setup.'); resolve()}));
-
-        self.promises = self.promises.then(this.teachSub());
 
         
         return self.promises;
