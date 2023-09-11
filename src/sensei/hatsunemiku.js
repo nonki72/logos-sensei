@@ -74,8 +74,54 @@ class HatsuneMikuSensei {
             return self.apiClient.createStoredValue('HatsuneMikuTrainingDataLyrics', 'string', null, null, trainingOutputDataZ64);
         });
 
-
-
+        self.promises = self.promises.then(() => {
+            console.log('---HatsuneMikuNextWordFn---');
+            var data = {
+                  name: 'HatsuneMikuNextWordFn',
+                  astid: null, 
+                  fn: `
+    var defer = Q.defer();
+    console.log("HMNW Arg:" + JSON.stringify(CTX.args.lastWord));
+    async function run(lastWord) {
+        const trainingDataFreeIdentifier = await DataLib.promiseGetFreeIdentifierByName("HatsuneMikuTrainingDataLyrics")
+          .catch((reason) => {console.error("HMNW REJECT: " + reason); return defer.reject(reason);});
+        if (trainingDataFreeIdentifier == null) {
+            return setTimeout(run, 1000);
+        }
+    
+        const buffer = Buffer.from(trainingDataFreeIdentifier.fn, 'base64');
+        const trainingOutputData = zlib.inflateSync(buffer);
+        const trainingOutputDataJson = JSON.parse(trainingOutputData);
+    
+        const used = process.memoryUsage().heapUsed / 1024 / 1024;
+        console.log("The training data uses approximately " + Math.round(used * 100) / 100 + " MB");
+      
+        // load
+        const lstm = new brain.recurrent.LSTM();
+        lstm.fromJSON(trainingOutputDataJson);
+    
+        // run
+        const run1 = lstm.run(lastWord);
+        console.log("HMNW RESPONSE: " + run1);
+        defer.resolve(run1);
+    }
+    run(lastWord);
+    defer.promise`, 
+                  fntype: 'string', 
+                  fnclas: null,
+                  fnmod: null,
+                  argnum: 1, 
+                  argtypes: [["lastWord","string"]], 
+                  modules: null,
+                  memoize: true,
+                  promise: true,
+                  testargs: ["this"]
+            };
+    
+            return self.apiClient.createStoredFunction(data);
+        });
+    
+    
 
         self.promises = self.promises.then(new Promise((resolve) => {console.log('Completed teaching hatsune miku neural network training setup.'); resolve()}));
 
