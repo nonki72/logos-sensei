@@ -66,6 +66,10 @@ class HatsuneMikuSensei {
 //        let trainingOutputDataZBin = Buffer.from(trainingOutputDataZ64, 'base64');
 
 
+        //
+        self.promises = self.promises.then(this.apiClient.createModule('DataLib', './datalib'));
+        self.promises = self.promises.then(this.apiClient.createModule('zlib', 'zlib'));
+        self.promises = self.promises.then(this.apiClient.createModule('brain', 'brain.js'));
 
         // create training data fragment
         self.promises = self.promises.then(() => {
@@ -81,7 +85,8 @@ class HatsuneMikuSensei {
                   astid: null, 
                   fn: `
     var defer = Q.defer();
-    console.log("HMNW Arg:" + JSON.stringify(CTX.args.lastWord));
+    const lastWord = CTX.args.lastWord;
+    console.log("HMNW Arg:" + JSON.stringify(lastWord));
     async function run(lastWord) {
         const trainingDataFreeIdentifier = await DataLib.promiseGetFreeIdentifierByName("HatsuneMikuTrainingDataLyrics")
           .catch((reason) => {console.error("HMNW REJECT: " + reason); return defer.reject(reason);});
@@ -102,8 +107,10 @@ class HatsuneMikuSensei {
     
         // run
         const run1 = lstm.run(lastWord);
-        console.log("HMNW RESPONSE: " + run1);
-        defer.resolve(run1);
+        const words = run1.split(" ");
+        const firstWordRun1 = (words[0] == "") ? words[1] : words[0];
+        console.log("HMNW RESPONSE: " + firstWordRun1);
+        defer.resolve(firstWordRun1);
     }
     run(lastWord);
     defer.promise`, 
@@ -112,10 +119,10 @@ class HatsuneMikuSensei {
                   fnmod: null,
                   argnum: 1, 
                   argtypes: [["lastWord","string"]], 
-                  modules: null,
+                  modules: ["DataLib", "zlib", "brain"],
                   memoize: true,
                   promise: true,
-                  testargs: ["this"]
+                  testargs: ["test"]
             };
     
             return self.apiClient.createStoredFunction(data);
