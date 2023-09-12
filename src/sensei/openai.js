@@ -22,6 +22,7 @@ class OpenAiSensei {
   	promises = promises.then(() => {return self.basic()});
   	promises = promises.then(() => {console.log('Establishing modules and classes...')});
 	promises = promises.then(this.apiClient.createModule('openai', 'openai'));
+	promises = promises.then(this.apiClient.createModule('openaiConfig', '../keys/openai.json'));
 	promises = promises.then(this.apiClient.createModule('JS', null));
 	promises = promises.then(this.apiClient.createClass('Array', 'JS'));
   	promises = promises.then(() => {console.log('Creating Open AI functions...')});
@@ -35,7 +36,7 @@ class OpenAiSensei {
 var defer = Q.defer();
 console.log("GCARG:" + JSON.stringify(CTX.args.phrase));
 const configuration = new openai.Configuration({
-	apiKey: '${openaiConfig.apiKey}',
+	apiKey: openaiConfig.apiKey,
 });
 const openaiapi = new openai.OpenAIApi(configuration);
 async function run() {
@@ -72,7 +73,7 @@ defer.promise`,
 			  fnmod: null,
 			  argnum: 1, 
 			  argtypes: [["phrase","string"]], 
-			  modules: ['openai'],
+			  modules: ['openai','openaiConfig'],
 			  memoize: true,
 			  promise: true,
 			  testargs: ["this a testing of hatsune miku grammar checker"]
