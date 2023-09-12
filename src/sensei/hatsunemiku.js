@@ -70,7 +70,7 @@ class HatsuneMikuSensei {
         self.promises = self.promises.then(this.apiClient.createModule('DataLib', './datalib'));
         self.promises = self.promises.then(this.apiClient.createModule('zlib', 'zlib'));
         self.promises = self.promises.then(this.apiClient.createModule('brain', 'brain.js'));
-        self.promises = self.promises.then(this.apiClient.createModule('util', 'util'));
+        self.promises = self.promises.then(this.apiClient.createModule('tools', './tools'));
 
         // create training data fragment
         self.promises = self.promises.then(() => {
@@ -89,7 +89,7 @@ class HatsuneMikuSensei {
     const lastWord = CTX.args.lastWord;
     console.log("HMNW Arg:" + JSON.stringify(lastWord));
     async function run(lastWord) {
-        const trainingDataFreeIdentifier = await util.promisify(DataLib.getFreeIdentifierByName)("HatsuneMikuTrainingDataLyrics")
+        const trainingDataFreeIdentifier = await tools.promisify(DataLib.getFreeIdentifierByName)("HatsuneMikuTrainingDataLyrics")
           .catch((reason) => {console.error("HMNW REJECT: " + reason); return defer.reject(reason);});
         if (trainingDataFreeIdentifier == null) {
             return setTimeout(run, 1000);
@@ -120,7 +120,7 @@ class HatsuneMikuSensei {
                   fnmod: null,
                   argnum: 1, 
                   argtypes: [["lastWord","string"]], 
-                  modules: ["DataLib", "zlib", "brain", "util"],
+                  modules: ["DataLib", "zlib", "brain", "tools"],
                   memoize: true,
                   promise: true,
                   testargs: ["test"]

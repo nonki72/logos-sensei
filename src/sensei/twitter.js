@@ -39,9 +39,10 @@ const rwClient = client.readWrite
 
 const tweet = async () => {
     try {
-        await rwClient.v2.tweet(CTX.args.text);
+        return await rwClient.v2.tweet(CTX.args.text);
     } catch (e) {
         console.error(e);
+        return e;
     }
 }
 
