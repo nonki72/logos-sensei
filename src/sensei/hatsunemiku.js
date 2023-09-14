@@ -5,7 +5,6 @@ var http = require('http');
 const brain = require('brain.js');
 var zlib = require('zlib');
 
-
 class HatsuneMikuSensei {
 
     constructor(apiClient) {
@@ -66,7 +65,9 @@ class HatsuneMikuSensei {
 //        let trainingOutputDataZBin = Buffer.from(trainingOutputDataZ64, 'base64');
 
 
-        //
+        self.promises = self.promises.then(Q.fcall(() => {
+            console.log('Establishing modules...')
+        }));
         self.promises = self.promises.then(this.apiClient.createModule('DataLib', './datalib'));
         self.promises = self.promises.then(this.apiClient.createModule('zlib', 'zlib'));
         self.promises = self.promises.then(this.apiClient.createModule('brain', 'brain.js'));
@@ -89,10 +90,10 @@ class HatsuneMikuSensei {
     const lastWord = CTX.args.lastWord;
     console.log("HMNW Arg:" + JSON.stringify(lastWord));
     async function run(lastWord) {
-        const trainingDataFreeIdentifier = await tools.promisify(DataLib.getFreeIdentifierByName)("HatsuneMikuTrainingDataLyrics")
-          .catch((reason) => {console.error("HMNW REJECT: " + reason); return defer.reject(reason);});
+        const trainingDataFreeIdentifier = await tools.promisify(DataLib.readFreeIdentifierByName)("HatsuneMikuTrainingDataLyrics")
+          .catch((reason) => {console.error(reason); return null;});
         if (trainingDataFreeIdentifier == null) {
-            return setTimeout(run, 1000);
+            return defer.reject("HMNW REJECT: training data not found");
         }
     
         const buffer = Buffer.from(trainingDataFreeIdentifier.fn, 'base64');
