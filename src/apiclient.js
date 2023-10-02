@@ -54,15 +54,45 @@ class ApiClient {
 			});
 	}
 
-  readFreeIdentifier(name) {
-	  return request.get(this.hostname + "/api/function/" + name)
-	  .end()
+	readFreeIdentifier(name) {
+		return request.get(this.hostname + "/api/function/" + name)
+		.end()
+		  .then(function(res) {
+			  if (!res.ok) throw new Error(res.status);
+			  return res.body.freeIdentifier;
+	  }, (res)=>{
+		  console.log(res.message + " : " + res.response);
+	  });
+	}
+  
+  
+
+	readFreeIdentifierByFn(fn) {
+		return request.get(this.hostname + "/api/lambda/identifier/" + fn)
+		.end()
+		  .then(function(res) {
+			  if (!res.ok) throw new Error(res.status);
+			  return res.body.freeIdentifier;
+	  }, (res)=>{
+		  console.log(res.message + " : " + res.response);
+	  });
+	}
+  
+  
+	
+  readFreeIdentifiersRegex(regex, cursor, pageSize) {
+	var url = this.hostname + "/api/function-bulk/regex/"+encodeURI(regex)+"?pageSize="+encodeURI(pageSize);
+	if (cursor != null) {
+		url += "&cursor="+encodeURI(cursor);
+	}
+	return request.get(url)
+		.end()
 		.then(function(res) {
 			if (!res.ok) throw new Error(res.status);
-			return res.body.freeidentifier;
-    }, (res)=>{
-    	console.log(res.message + " : " + res.response);
-    });
+			return res.body;
+	}, (res)=>{
+		console.log(res.message + " : " + res.response);
+	});
   }
 
 
