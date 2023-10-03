@@ -60,29 +60,36 @@ class EdgeGloveCorpSensei {
 
 	promises = promises.then(async () => {
 		//function to use to process each free identifier (wordnet word)
-		const processWord  = function(freeIdentifier) {
+		const processWord  = async function(freeIdentifier) {
 			const word = freeIdentifier.fn.replace(/\"/g, '');
+			const freeIdentifierWord1 = await self.apiClient.readFreeIdentifierByFn("\"" + word + "\"");
+			if (freeIdentifierWord1 == null) {
+				console.log("Skipping word " + strikeThrough(word));
+			}
 			// run edgeGloveFuncRelated to get the related words
 			const nearestNeighbors = edgeglove.edgegloveFreqWord(word, 100, 100);
 			console.log("Edge-ML GloVe NLP nearest neighbors for " + word + ": " + nearestNeighbors);
 			// for each related word, add an application and substitution to the Diary
 			nearestNeighbors.forEach(async (word2) => {
 				const freeIdentifierWord2 = await self.apiClient.readFreeIdentifierByFn("\"" + word2 + "\"");
-				if (freeIdentifierWord2 != null) {
-					// make an application (edgeGloveFuncRelated, freeIdentifierWord2)
-					await self.apiClient.createApplication(self.edgeGloveFuncRelated.id, freeIdentifierWord.id)
+				if (freeIdentifierWord1 != null && freeIdentifierWord2 != null) {
+					// make an application (edgeGloveFuncRelated, freeIdentifierWord1)
+					await self.apiClient.createApplication(self.edgeGloveFuncRelated.id, freeIdentifierWord1.id)
 						.then(async (applicationRelatedWord) => {
 							// make a substitution (applicationRelatedWord) -> freeIdentifierWord2
 							await self.apiClient.createSubstitution('eta', applicationRelatedWord.id, freeIdentifierWord2.id);
-							console.log("Added " + word + " -> " + word2);
+							console.log("Added map " + word + " -> " + word2);
 						});
 				} else {
-					console.log("Skipping " + word + " -> " + strikeThrough(word2));
+					console.log("Skipping map " + word + " -> " + strikeThrough(word2));
 				}
 			});
 		}
 
-		var {freeIdentifiers, nextCursor} = await self.apiClient.readFreeIdentifiersRegex("WordnetWord.*", null, 100);
+		// now use the above function on each wordnet word in the Diary
+		const result = await self.apiClient.readFreeIdentifiersRegex("WordnetWord.*", null, 100);
+		const freeIdentifiers = result.freeIdentifiers;
+		const nextCursor = result.nextCursor;
 		while (freeIdentifiers.length > 0) {
 			freeIdentifiers.forEach(processWord);
 			const res = await self.apiClient.readFreeIdentifiersRegex("WordnetWord.*", nextCursor, 100);
