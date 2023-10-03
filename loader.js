@@ -32,7 +32,7 @@ senseisConstructorMap['TwitterSensei'] = TwitterSensei.TwitterSensei;
 senseisConstructorMap['NlpCloudSensei'] = NlpCloudSensei.NlpCloudSensei;
 senseisConstructorMap['OpenAiSensei'] = OpenAiSensei.OpenAiSensei;
 senseisConstructorMap['Gpt4AllSensei'] = Gpt4AllSensei.Gpt4AllSensei;
-senseisConstructorMap['EdgeGloveSensei'] = EdgeGloveFuncSensei.EdgeGloveFuncSensei;
+senseisConstructorMap['EdgeGloveFuncSensei'] = EdgeGloveFuncSensei.EdgeGloveFuncSensei;
 senseisConstructorMap['EdgeGloveCorpSensei'] = EdgeGloveCorpSensei.EdgeGloveCorpSensei;
 senseisConstructorMap['SpacySensei'] = SpacySensei.SpacySensei;
 senseisConstructorMap['HatsuneMikuSensei'] = HatsuneMikuSensei.HatsuneMikuSensei;
@@ -113,13 +113,15 @@ function startUp() {
 		}).then(() => {
 			try {
 				var readyServices = Services.ready(serviceName);
-				return readyServices.spread((senseiService) => {
-		          return senseiService.service.teach(args)
-						}, () => {
-							console.log('.');
-						}).then(() => {
-							console.log("========= Sensei Service '" + serviceName + "' finished. =========")
-						})
+				return readyServices.spread(
+					(senseiService) => {
+		        		return senseiService.service.teach(args);
+					}, () => {
+						console.log('.');
+					})
+					.then(() => {
+						console.log("========= Sensei Service '" + serviceName + "' finished. =========")
+					})
 			} catch (reason) {
 				console.error("Couldn't load service, Reason: " + reason);
 				setTimeout(startService, 500, serviceName, promise);

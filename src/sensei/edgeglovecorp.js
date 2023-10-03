@@ -50,9 +50,9 @@ class EdgeGloveCorpSensei {
   teach(args) {
 	  var self = this;
 
-	  var skip = 0; // how many words to skip
-	  if (args) skip = args[0];
-	  var count = 0;
+	//   var skip = 0; // how many words to skip
+	//   if (args) skip = args[0];
+	//   var count = 0;
 
   	var promises = new Promise((resolve) => {console.log('Establishing basic definitions...'); resolve()})
   	promises = promises.then(() => {return this.basic()});
@@ -64,7 +64,7 @@ class EdgeGloveCorpSensei {
 			const word = freeIdentifier.fn.replace(/\"/g, '');
 			// run edgeGloveFuncRelated to get the related words
 			const nearestNeighbors = edgeglove.edgegloveFreqWord(word, 100, 100);
-			console.log("Edge Glove nearest neighbors for " + word + ": " + nearestNeighbors);
+			console.log("Edge-ML GloVe NLP nearest neighbors for " + word + ": " + nearestNeighbors);
 			// for each related word, add an application and substitution to the Diary
 			nearestNeighbors.forEach(async (word2) => {
 				const freeIdentifierWord2 = await self.apiClient.readFreeIdentifierByFn("\"" + word2 + "\"");
