@@ -2,7 +2,7 @@
 const Q = require('q');
 Q.map = require('q-map').map;
 
-class EdgeGloveSensei {
+class EdgeGloveFuncSensei {
 
   constructor(apiClient) {
   	this.apiClient = apiClient;
@@ -23,7 +23,7 @@ class EdgeGloveSensei {
 	promises = promises.then(this.apiClient.createModule('edgeglove', './edgeglove.js'));
 	promises = promises.then(this.apiClient.createModule('JS', null));
 	promises = promises.then(this.apiClient.createClass('Array', 'JS'));
-  	promises = promises.then(() => {console.log('Creating spaCy functions...')});
+  	promises = promises.then(() => {console.log('Creating Edge-ML GloVe NLP functions...')});
 
 	  // make the code that will go into the database as free identifiers
 
@@ -66,6 +66,6 @@ defer.promise`,
   }
 }
 
-exports.EdgeGloveSensei = EdgeGloveSensei;
+exports.EdgeGloveFuncSensei = EdgeGloveFuncSensei;
 
 
