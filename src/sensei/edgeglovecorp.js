@@ -88,8 +88,8 @@ class EdgeGloveCorpSensei {
 
 		// now use the above function on each wordnet word in the Diary
 		const result = await self.apiClient.readFreeIdentifiersRegex("WordnetWord.*", null, cursorPageSize);
-		const freeIdentifiers = result.freeIdentifiers;
-		const nextCursor = result.nextCursor;
+		var freeIdentifiers = result.freeIdentifiers;
+		var nextCursor = result.nextCursor;
 		while (freeIdentifiers.length > 0) {
 			const start = count * cursorPageSize;
 			console.log("Processing words " + (start + 1) + " to " + (start + cursorPageSize) + "...");
