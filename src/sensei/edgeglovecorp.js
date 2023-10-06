@@ -70,20 +70,20 @@ class EdgeGloveCorpSensei {
 			const nearestNeighbors = edgeglove.edgegloveFreqWord(word, 100, 100);
 			console.log("Edge-ML GloVe NLP nearest neighbors for word " + countLocalToClosure + ". " + word + ": " + nearestNeighbors);
 			// for each related word, add an application and substitution to the Diary
-			nearestNeighbors.forEach(async (word2) => {
+			for (const word2 of nearestNeighbors) {
 				const freeIdentifierWord2 = await self.apiClient.readFreeIdentifierByFn("\"" + word2 + "\"");
+				// when both words are found in Diary, make a mapping
 				if (freeIdentifierWord1 != null && freeIdentifierWord2 != null) {
 					// make an application (edgeGloveFuncRelated, freeIdentifierWord1)
-					await self.apiClient.createApplication(self.edgeGloveFuncRelated.id, freeIdentifierWord1.id)
-						.then(async (applicationRelatedWord) => {
-							// make a substitution (applicationRelatedWord) -> freeIdentifierWord2
-							await self.apiClient.createSubstitution('eta', applicationRelatedWord.id, freeIdentifierWord2.id);
-							console.log("Added map " + word + " -> " + word2);
-						});
+					const applicationRelatedWord = await self.apiClient.createApplication(self.edgeGloveFuncRelated.id, freeIdentifierWord1.id);
+					// make a substitution (applicationRelatedWord) -> freeIdentifierWord2
+					const substitutionMapping = await self.apiClient.createSubstitution('eta', applicationRelatedWord.id, freeIdentifierWord2.id);
+
+					console.log("Added map " + word + " -> " + word2);
 				} else {
 					console.log("Skipping map " + word + " -> " + strikeThrough(word2));
 				}
-			});
+			}
 		}
 
 		// now use the above function on each wordnet word in the Diary
@@ -92,7 +92,7 @@ class EdgeGloveCorpSensei {
 		const nextCursor = result.nextCursor;
 		while (freeIdentifiers.length > 0) {
 			const start = count * cursorPageSize;
-			console.log("Processing words " + (start + 1) + " to " + (s	tart + cursorPageSize) + "...");
+			console.log("Processing words " + (start + 1) + " to " + (start + cursorPageSize) + "...");
 			for (var i = 0; i < freeIdentifiers.length; i++) {
 				await processWord(freeIdentifiers[i], start + i + 1);
 			}
