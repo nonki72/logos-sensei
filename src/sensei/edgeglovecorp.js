@@ -1,7 +1,7 @@
 'use strict';
 var Promise = require("bluebird");
 var edgeglove = require('../../../logos-ai/src/edgeglove.js');
-
+const cursorPageSize = 10;
 function strikeThrough(text) {
 	return text
 	  .split('')
@@ -52,7 +52,7 @@ class EdgeGloveCorpSensei {
 
 	//   var skip = 0; // how many words to skip
 	//   if (args) skip = args[0];
-	//   var count = 0;
+	var count = 0;
 
   	var promises = new Promise((resolve) => {console.log('Establishing basic definitions...'); resolve()})
   	promises = promises.then(() => {return this.basic()});
@@ -60,15 +60,15 @@ class EdgeGloveCorpSensei {
 
 	promises = promises.then(async () => {
 		//function to use to process each free identifier (wordnet word)
-		const processWord  = async function(freeIdentifier) {
+		const processWord  = async function(freeIdentifier, countLocalToClosure) {
 			const word = freeIdentifier.fn.replace(/\"/g, '');
 			const freeIdentifierWord1 = await self.apiClient.readFreeIdentifierByFn("\"" + word + "\"");
 			if (freeIdentifierWord1 == null) {
-				console.log("Skipping word " + strikeThrough(word));
+				console.log("Skipping word " + countLocalToClosure + ". " + strikeThrough(word));
 			}
 			// run edgeGloveFuncRelated to get the related words
 			const nearestNeighbors = edgeglove.edgegloveFreqWord(word, 100, 100);
-			console.log("Edge-ML GloVe NLP nearest neighbors for " + word + ": " + nearestNeighbors);
+			console.log("Edge-ML GloVe NLP nearest neighbors for word " + countLocalToClosure + ". " + word + ": " + nearestNeighbors);
 			// for each related word, add an application and substitution to the Diary
 			nearestNeighbors.forEach(async (word2) => {
 				const freeIdentifierWord2 = await self.apiClient.readFreeIdentifierByFn("\"" + word2 + "\"");
@@ -87,12 +87,19 @@ class EdgeGloveCorpSensei {
 		}
 
 		// now use the above function on each wordnet word in the Diary
-		const result = await self.apiClient.readFreeIdentifiersRegex("WordnetWord.*", null, 100);
+		const result = await self.apiClient.readFreeIdentifiersRegex("WordnetWord.*", null, cursorPageSize);
 		const freeIdentifiers = result.freeIdentifiers;
 		const nextCursor = result.nextCursor;
 		while (freeIdentifiers.length > 0) {
-			freeIdentifiers.forEach(processWord);
-			const res = await self.apiClient.readFreeIdentifiersRegex("WordnetWord.*", nextCursor, 100);
+			const start = count * cursorPageSize;
+			console.log("Processing words " + (start + 1) + " to " + (s	tart + cursorPageSize) + "...");
+			for (var i = 0; i < freeIdentifiers.length; i++) {
+				await processWord(freeIdentifiers[i], start + i + 1);
+			}
+			count++;
+			console.log("Processed " + (start + cursorPageSize) + " words");
+			// get next page of words
+			const res = await self.apiClient.readFreeIdentifiersRegex("WordnetWord.*", nextCursor, cursorPageSize);
 			freeIdentifiers = res.freeIdentifiers;
 			nextCursor = res.nextCursor;
 		}
