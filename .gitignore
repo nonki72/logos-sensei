@@ -4,3 +4,5 @@ config.json
 data
 env.sh
 keys/*.json
+corpus/lemmas_60k_m2355.txt
+corpus/words_219k_m2355.txt
