@@ -6,6 +6,11 @@ const ApiClient = require('./src/apiclient');
 const IoSensei = require('./src/sensei/io');
 const AssociationSensei = require('./src/sensei/association');
 const NativeSensei = require('./src/sensei/native');
+const HatsuneMikuSensei = require('./src/sensei/hatsunemiku');
+const WordFreqFuncSensei = require('./src/sensei/wordfreqfunc');
+const WordFreqCorpSensei60k = require('./src/sensei/wordfreqcorp60k');
+const WordFreqCorpSensei219k = require('./src/sensei/wordfreqcorp219k');
+const WordnetSensei = require('./src/sensei/wordnet');
 const GrammarSensei = require('./src/sensei/grammar');
 const DataTypeSensei = require('./src/sensei/datatype');
 const TwitterSensei = require('./src/sensei/twitter');
@@ -15,17 +20,17 @@ const Gpt4AllSensei = require('./src/sensei/gpt4all');
 const EdgeGloveFuncSensei = require('./src/sensei/edgeglovefunc');
 const EdgeGloveCorpSensei = require('./src/sensei/edgeglovecorp');
 const SpacySensei = require('./src/sensei/spacy');
-const HatsuneMikuSensei = require('./src/sensei/hatsunemiku');
-const WordFreqFuncSensei = require('./src/sensei/wordfreqfunc');
-const WordFreqCorpSensei60k = require('./src/sensei/wordfreqcorp60k');
-const WordFreqCorpSensei219k = require('./src/sensei/wordfreqcorp219k');
-const WordnetSensei = require('./src/sensei/wordnet');
 
 // Mapping of names to Senseis
 const senseisConstructorMap = {}
 senseisConstructorMap['IoSensei'] = IoSensei.IoSensei;
 senseisConstructorMap['AssociationSensei'] = AssociationSensei.AssociationSensei;
 senseisConstructorMap['NativeSensei'] = NativeSensei.NativeSensei;
+senseisConstructorMap['HatsuneMikuSensei'] = HatsuneMikuSensei.HatsuneMikuSensei;
+senseisConstructorMap['WordFreqFuncSensei'] = WordFreqFuncSensei.WordFreqFuncSensei;
+senseisConstructorMap['WordFreqCorpSensei60k'] = WordFreqCorpSensei60k.WordFreqCorpSensei60k;
+senseisConstructorMap['WordFreqCorpSensei219k'] = WordFreqCorpSensei219k.WordFreqCorpSensei219k;
+senseisConstructorMap['WordnetSensei'] = WordnetSensei.WordnetSensei;
 senseisConstructorMap['GrammarSensei'] = GrammarSensei.GrammarSensei;
 senseisConstructorMap['DataTypeSensei'] = DataTypeSensei.DataTypeSensei;
 senseisConstructorMap['TwitterSensei'] = TwitterSensei.TwitterSensei;
@@ -35,11 +40,6 @@ senseisConstructorMap['Gpt4AllSensei'] = Gpt4AllSensei.Gpt4AllSensei;
 senseisConstructorMap['EdgeGloveFuncSensei'] = EdgeGloveFuncSensei.EdgeGloveFuncSensei;
 senseisConstructorMap['EdgeGloveCorpSensei'] = EdgeGloveCorpSensei.EdgeGloveCorpSensei;
 senseisConstructorMap['SpacySensei'] = SpacySensei.SpacySensei;
-senseisConstructorMap['HatsuneMikuSensei'] = HatsuneMikuSensei.HatsuneMikuSensei;
-senseisConstructorMap['WordFreqFuncSensei'] = WordFreqFuncSensei.WordFreqFuncSensei;
-senseisConstructorMap['WordFreqCorpSensei60k'] = WordFreqCorpSensei60k.WordFreqCorpSensei60k;
-senseisConstructorMap['WordFreqCorpSensei219k'] = WordFreqCorpSensei219k.WordFreqCorpSensei219k;
-senseisConstructorMap['WordnetSensei'] = WordnetSensei.WordnetSensei;
 
 // API Client Service needed by all Senseis
 var ApiClientService = Object.create(Services.Service);

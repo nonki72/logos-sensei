@@ -40,7 +40,7 @@ const createCompletion = gpt4all.createCompletion;
 const loadModel = gpt4all.loadModel;
 
 async function run() {
-	const model = await loadModel('ggml-model-gpt4all-falcon-q4_0', { verbose: false });
+	const model = await loadModel('nous-hermes-13b.ggmlv3.q4_0', { verbose: true });
 
 	return await createCompletion(model, [
 		    {
@@ -51,13 +51,18 @@ async function run() {
 				"role": "user",
 				"content": CTX.args.phrase
 			}
-		], {"systemPromptTemplate": "convert {user content} to standard English"});
+		], {"systemPromptTemplate": "### System:\
+		%1\
+		### User:\
+		%2\
+		### Response:\
+		"});
 }
 async function fulfill() {
 	try {
 		const response = await run();
 		console.log(util.inspect(response, false, null, true /* enable colors */));
-		const sentence = response.data.choices[0].message.content;
+		const sentence = response.choices[0].message.content;
 		console.log("GCRESPONSE: " + sentence);
 		defer.resolve(sentence);
 	} catch (err) {
@@ -93,7 +98,7 @@ const createCompletion = gpt4all.createCompletion;
 const loadModel = gpt4all.loadModel;
 
 async function run() {
-	const model = await loadModel('ggml-model-gpt4all-falcon-q4_0', { verbose: false });
+	const model = await loadModel('nous-hermes-13b.ggmlv3.q4_0', { verbose: true });
 
 	return await createCompletion(model, [
 			{
@@ -104,12 +109,17 @@ async function run() {
 				"role": "user",
 				"content": CTX.args.phrase
 			}
-		]);
+		], {"systemPromptTemplate": "### System:\
+		%1\
+		### User:\
+		%2\
+		### Response:\
+		"});
 }
 async function fulfill() {
 	try {
 		const response = await run();
-		var keywordsString = response.data.choices[0].message.content;
+		var keywordsString = response.choices[0].message.content;
 		if (keywordsString.startsWith("The keyword from the given text is")) {
 			keywordsString = keywordsString.match(/"([^"]+)"/)[1]; // one keyword
 		} else if (keywordsString.startsWith("keywords")) {
