@@ -80,10 +80,10 @@ class ApiClient {
   
   
 	
-  readFreeIdentifiersRegex(regex, cursor, pageSize) {
+  readFreeIdentifiersRegex(regex, startAt, pageSize) {
 	var url = this.hostname + "/api/function-bulk/regex/"+encodeURI(regex)+"?pageSize="+encodeURI(pageSize);
-	if (cursor != null) {
-		url += "&cursor="+encodeURI(cursor);
+	if (startAt != null) {
+		url += "&startAt="+encodeURI(startAt);
 	}
 	return request.get(url)
 		.end()
