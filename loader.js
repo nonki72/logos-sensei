@@ -100,7 +100,7 @@ for (const senseiNameIndex in senseis) {
 // Initialization
 Services.start();
 
-function startUp() {
+async function startUp() {
 	var promise = {
 		chain: Q()
 	};
@@ -108,14 +108,14 @@ function startUp() {
   // add a service's teach promise chain to the main one
   // if error occurs, delay and try again
 	var startService = function (serviceName, promise) {
-		promise.chain = promise.chain.then(() => {
+		return promise.chain = promise.chain.then(() => {
 			console.log("========= Starting Sensei Service '" + serviceName + "'... =========")
 		}).then(() => {
 			try {
 				var readyServices = Services.ready(serviceName);
 				return readyServices.spread(
-					(senseiService) => {
-		        		return senseiService.service.teach(args);
+					async (senseiService) => {
+		        		return await senseiService.service.teach(args);
 					}, () => {
 						console.log('.');
 					})
@@ -131,8 +131,11 @@ function startUp() {
 
   // iterate through services array and attempt to create teaching promise chain
   // and add it to the main promise chain
-	senseis.forEach((senseiName) => {
-		startService.call(null, senseiName, promise);
+	senseis.forEach(async (senseiName) => {
+		promise = startService(senseiName, promise);
+	});
+	promise.then(() => {
+		process.exit();
 	});
 }
 
