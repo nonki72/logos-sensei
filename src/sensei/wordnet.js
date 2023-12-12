@@ -8,7 +8,7 @@ const WordNet = require('node-wordnet');
 const suffixes = ['adj', 'adv', 'noun', 'verb'];
 
 const basicPOS = {n:'noun', v:'verb', a:'adjective', r:'adverb', s:'adjectiveSatellite'};
-const basicFunctions = ['definition', 'synonym set', 'element', 'part of speech'];
+const basicFunctions = ['definition', 'synonym', 'synonym set', 'element', 'part of speech'];
 
 /* Wordnet identifier names
  *
@@ -24,7 +24,7 @@ function strikeThrough(text) {
 	  .map(char => char + '\u0336')
 	  .join('')
   }
-  
+
 
 class WordnetSensei {
 
@@ -44,29 +44,48 @@ class WordnetSensei {
   	var basicPromises = [
   	self.apiClient.createStoredFunction({
 				name: 'WordnetFuncDefinition',
-				astid: null, 
-				fn: null, 
-				fntype: 'string', 
+				astid: null,
+				fn: null,
+				fntype: 'string',
 				fnclass: null,
-				argnum: 1, 
-				argtypes: [["word","string"]], 
-				modules: null, 
-				memoize: true,  
+				argnum: 1,
+				argtypes: [["word","string"]],
+				modules: null,
+				memoize: true,
 				promise: false,
 				testargs: ["test"]
 	  	})
   	  .then((freeIdentifier) => { self.basicFunctionInstances['definition'] = freeIdentifier }),
 
+
+	  // this virtual function substitutes a word for one of its synonyms
+	  // the eta substitutions will result in n^2 mappings for synonym set of cardinality n
+	  self.apiClient.createStoredFunction({
+		name: 'WordnetFuncSynonym',
+		astid: null,
+		fn: null,
+		fntype: null,
+		fnclass: null,
+		argnum: 1,
+		argtypes: [["word","string"]],
+		modules: null,
+		memoize: true,
+		promise: false,
+		testargs: ["test"]
+	})
+	.then((freeIdentifier) => { self.basicFunctionInstances['synonym'] = freeIdentifier }),
+
+	// returns the synset number (id)
     self.apiClient.createStoredFunction({
 				name: 'WordnetFuncSynset',
-				astid: null, 
-				fn: null, 
-				fntype: 'number', 
+				astid: null,
+				fn: null,
+				fntype: 'number',
 				fnclass: null,
-				argnum: 1, 
-				argtypes: [["word","string"]], 
-				modules: null, 
-				memoize: true,  
+				argnum: 1,
+				argtypes: [["word","string"]],
+				modules: null,
+				memoize: true,
 				promise: false,
 				testargs: ["test"]
 	  	})
@@ -74,14 +93,14 @@ class WordnetSensei {
 
   	self.apiClient.createStoredFunction({
 				name: 'WordnetFuncElement',
-				astid: null, 
-				fn: null, 
-				fntype: 'string', 
-				fnclass: null, 
-				argnum: 1, 
-				argtypes: [["set","number"]], 
-				modules: null, 
-				memoize: true,  
+				astid: null,
+				fn: null,
+				fntype: 'string',
+				fnclass: null,
+				argnum: 1,
+				argtypes: [["set","number"]],
+				modules: null,
+				memoize: true,
 				promise: false,
 				testargs: [123]
 	  	})
@@ -89,14 +108,14 @@ class WordnetSensei {
 
   	self.apiClient.createStoredFunction({
 				name: 'WordnetFuncPOS',
-				astid: null, 
-				fn: null, 
-				fntype: 'string', 
-				fnclass: null, 
-				argnum: 1, 
-				argtypes: [["synset","number"]], 
-				modules: null, 
-				memoize: true,  
+				astid: null,
+				fn: null,
+				fntype: 'string',
+				fnclass: null,
+				argnum: 1,
+				argtypes: [["synset","number"]],
+				modules: null,
+				memoize: true,
 				promise: false,
 				testargs: [123]
 	  	})
@@ -166,7 +185,43 @@ class WordnetSensei {
 		  .then((words) => {console.log('Starting Wordnet simple teaching program...');return Promise.resolve(words)})
     	.then((words) => {
 
-        // teach routine for a word
+        // teach routine for a word------------------ setup start
+
+		    // given a word, create a synset for it
+			// and direct mappings for synonyms
+			async function createSynsetMappings(freeIdentifierWord, synsetOffset, posClass, synsetWordList) {
+				// first make associations mapping this word to all its synonyms directly with the virutal WordnetSynset function
+				synsetWordList.forEach(async synonymWord => {
+					// this will create or read a synonym word
+					// unique wrt the given synset offset
+					var synonymWord = synonymWord.replace(/_/g,' ');
+					const synonymFreeIdentifierWord = await self.apiClient.createStoredValue("WordnetWord" + numToLetters(synsetOffset) + synonymWord.replace(/[^a-zA-Z]/g, ''),
+						'object',
+						'Grammar',
+						posClass,
+						'"'+synonymWord+'"');
+					// sub: (synonym $word) -> synonym
+					const applicationSynonymfuncAndWord = await self.apiClient.createApplication(self.basicFunctionInstances['synonym'].id, freeIdentifierWord.id);
+					return await self.apiClient.createSubstitution('eta', applicationSynonymfuncAndWord.id, synonymFreeIdentifierWord.id);
+				});
+
+				// now create associations mapping this word to its synset, and the synset to this word (one of its elements)
+				return await self.apiClient.createApplication(self.basicFunctionInstances['synonym set'].id, freeIdentifierWord.id)
+				.then(async (applicationSynsetWord) => {
+					return await self.apiClient.createStoredValue("WordnetSynset" + numToLetters(synsetOffset), 'number', null, null, parseInt(synsetOffset))
+					.then(async (freeIdentifierSynset) => {
+						return await self.apiClient.createSubstitution('eta', applicationSynsetWord.id, freeIdentifierSynset.id)
+						.then(async (substiution1) => {
+							// sub: (element $synset) -> word
+							return await self.apiClient.createApplication(self.basicFunctionInstances['element'].id, freeIdentifierSynset.id)
+							.then(async (applicationElementSynset) => {
+								return await self.apiClient.createSubstitution('eta', applicationElementSynset.id, freeIdentifierWord.id);
+							});
+						});
+					});
+				});
+			}
+
 				var teachPromise = (obj) => {
 					var word = obj.word.word.replace(/_/g,' ');
 					var posClass = suffixToClass(obj.word.synsetType);
@@ -187,29 +242,18 @@ class WordnetSensei {
 					process.stdout.write("["+obj.word.synsetType+"]"+word+'..');
 		        // sub: (synset $word) -> $synset
 		    		return await self.apiClient.createStoredValue(
-						"WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''), 
+						"WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''),
 						'object',
-						'Grammar', 
-						posClass, 
+						'Grammar',
+						posClass,
 						'"'+word+'"')
 			    	  .then(async (freeIdentifierWord) => {
-			    		return await self.apiClient.createApplication(self.basicFunctionInstances['synonym set'].id, freeIdentifierWord.id)
-			    		   .then(async (applicationSynsetWord) => {
-			    	    return await self.apiClient.createStoredValue("WordnetSynset" + numToLetters(result.synsetOffset), 'number', null, null, parseInt(result.synsetOffset))
-			    	      .then(async (freeIdentifierSynset) => {
-			    		    return await self.apiClient.createSubstitution('eta', applicationSynsetWord.id, freeIdentifierSynset.id)
-			    		      .then(async (substiution1) => {
-			    		    	// sub: (element $synset) -> word
-			    		    	return await self.apiClient.createApplication(self.basicFunctionInstances['element'].id, freeIdentifierSynset.id)
-			    		    	  .then(async (applicationElementSynset) => {
-			    		    	  return await self.apiClient.createSubstitution('eta', applicationElementSynset.id, freeIdentifierWord.id);
-			    		    	});
-			    		    });
-			    		  });
-			    		});
+						createSynsetMappings(freeIdentifierWord, result.synsetOffset, posClass, result.synonyms);
 				    });
 			    }));
         };
+
+		// teach routine for a word------------------ setup end
 
         // for each word
         // (wordnet lib's lookupAsync() is somehow faulty.. use deferred instead to make it a promise)
@@ -241,7 +285,7 @@ class WordnetSensei {
 
     return promises;
   }
-  
+
 }
 
 
