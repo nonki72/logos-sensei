@@ -13,9 +13,8 @@ class WordFreqCorpSensei60k {
         this.wordObjs = [];
         this.readWordsCount = 0;
         this.writeWordsCount = 0;
-        this.writeWordsCountSub = 0;
-        this.promises = Q();
-        this.promise = Q.defer();
+        this.promises = Q.defer();
+        this.subPromise = Q.defer();
     }
 
     createWordFrequency(name, freq) {
@@ -33,13 +32,12 @@ class WordFreqCorpSensei60k {
                 
         };
         var req = http.request(options, function(res) {
-            console.log('Status: ' + res.statusCode);
-            console.log('Headers: ' + JSON.stringify(res.headers));
+//            console.log('Status: ' + res.statusCode);
+//            console.log('Headers: ' + JSON.stringify(res.headers));
             res.setEncoding('utf8');
             res.on('data', function (body) {
-                console.log('Body: ' + body); 
+                //console.log('Body: ' + body); 
                 self.writeWordsCount++;
-                self.writeWordsCountSub++;
             });
         });
         req.on('error', function(e) {
@@ -50,28 +48,24 @@ class WordFreqCorpSensei60k {
     }
 
     waitSub() {
-        if (this.writeWordsCountSub <= 99) {
-            setTimeout(this.waitSub.bind(this), 10); 
-        } else {
-            this.writeWordsCountSub = 0;
-            this.teachSub();
-        }
+        await this.teachSub(() => {
+            this.waitSub();
+        });
         if (this.writeWordsCount >= this.readWordsCount) {
-            this.promise.resolve();
+            this.promises.resolve();
         }
     }
 
-    teachSub() {
+    async teachSub(callback) {
         for(var i = 0; i < 100; i++) {
             var obj = this.wordObjs[this.readWordsCount++];
-            console.log(">"+obj.word);
-            setTimeout(this.createWordFrequency.bind(this,obj.word,obj.freq),10);
+            console.log((this.writeWordsCount+i)+">"+obj.word);
+            await this.createWordFrequency(obj.word,obj.freq);
         };
-        setTimeout(this.waitSub.bind(this), 10); 
-        return this.promise.promise;
+        callback();
     }
 
-    teach() {
+    setup() {
         var self = this;
         console.log('Starting WordFreq simple teaching program...');
   
@@ -93,14 +87,19 @@ class WordFreqCorpSensei60k {
             self.wordsCount++;
         });
         console.log('Done, count: ' + self.wordsCount);
-        self.promises = self.promises.then(new Promise((resolve) => {console.log('Completed teaching word frequencies setup.'); resolve()}));
 
-        self.promises = self.promises.then(this.teachSub());
+    }
 
+    teach() {
+        this.setup();
+        console.log('Completed teaching word frequencies setup.');
+            
+        this.teachSub()
+        console.log('Completed teaching word frequencies setup.');
         
         return self.promises;
     }
-}
 
+}
 
 exports.WordFreqCorpSensei60k = WordFreqCorpSensei60k;
