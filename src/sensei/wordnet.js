@@ -189,20 +189,26 @@ class WordnetSensei {
 
 		    // given a word, create a synset for it
 			// and direct mappings for synonyms
-			async function createSynsetMappings(freeIdentifierWord, synsetOffset, posClass, synsetWordList) {
+			async function createSynsetMappings(freeIdentifierWord, word, synsetOffset, posClass, synsetWordList) {
 				// first make associations mapping this word to all its synonyms directly with the virutal WordnetSynset function
 				synsetWordList.forEach(async synonymWord => {
 					// this will create or read a synonym word
 					// unique wrt the given synset offset
 					var synonymWord = synonymWord.replace(/_/g,' ');
-					const synonymFreeIdentifierWord = await self.apiClient.createStoredValue("WordnetWord" + numToLetters(synsetOffset) + synonymWord.replace(/[^a-zA-Z]/g, ''),
+					synonymWord.replace(/[^a-zA-Z]/g, '');
+					if (synonymWord == word) return;
+					return await self.apiClient.createStoredValue("WordnetWord" + numToLetters(synsetOffset) + synonymWord,
 						'object',
 						'Grammar',
 						posClass,
-						'"'+synonymWord+'"');
-					// sub: (synonym $word) -> synonym
-					const applicationSynonymfuncAndWord = await self.apiClient.createApplication(self.basicFunctionInstances['synonym'].id, freeIdentifierWord.id);
-					return await self.apiClient.createSubstitution('eta', applicationSynonymfuncAndWord.id, synonymFreeIdentifierWord.id);
+						'"'+synonymWord+'"').then(async (synonymFreeIdentifierWord) => {
+							// sub: (synonym $word) -> synonym
+							return await self.apiClient.createApplication(self.basicFunctionInstances['synonym'].id, freeIdentifierWord.id).then(async (applicationSynonymfuncAndWord) => {
+								return await self.apiClient.createSubstitution('eta', applicationSynonymfuncAndWord.id, synonymFreeIdentifierWord.id).then(async (substitution1) => {
+									console.log("Created synonym: " + freeIdentifierWord.fn + " -> " + synonymFreeIdentifierWord.fn);
+								});
+							});
+						});
 				});
 
 				// now create associations mapping this word to its synset, and the synset to this word (one of its elements)
@@ -224,6 +230,7 @@ class WordnetSensei {
 
 				var teachPromise = (obj) => {
 					var word = obj.word.word.replace(/_/g,' ');
+					word = word.replace(/[^a-zA-Z]/g, '');
 					var posClass = suffixToClass(obj.word.synsetType);
 					var results = obj.results;
 					// store words
@@ -242,13 +249,13 @@ class WordnetSensei {
 					process.stdout.write("["+obj.word.synsetType+"]"+word+'..');
 		        // sub: (synset $word) -> $synset
 		    		return await self.apiClient.createStoredValue(
-						"WordnetWord" + numToLetters(result.synsetOffset) + word.replace(/[^a-zA-Z]/g, ''),
+						"WordnetWord" + numToLetters(result.synsetOffset) + word,
 						'object',
 						'Grammar',
 						posClass,
 						'"'+word+'"')
 			    	  .then(async (freeIdentifierWord) => {
-						createSynsetMappings(freeIdentifierWord, result.synsetOffset, posClass, result.synonyms);
+						createSynsetMappings(freeIdentifierWord, word, result.synsetOffset, posClass, result.synonyms);
 				    });
 			    }));
         };

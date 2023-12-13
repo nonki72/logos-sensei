@@ -10,63 +10,59 @@ class WordFreqCorpSensei60k {
 
     constructor() {
         this.wordsCount = 0;
-        this.wordObjs = [];
-        this.readWordsCount = 0;
         this.writeWordsCount = 0;
-        this.promises = Q.defer();
-        this.subPromise = Q.defer();
+        this.promises = Q();
     }
 
     createWordFrequency(name, freq) {
-        var self = this;
-        const nameEscaped = encodeURI(name);
+        return new Promise((resolve, reject) => {
+            var self = this;
+            const nameEscaped = encodeURI(name);
+                        
+            var options = {
+                hostname: '127.0.0.1',
+                port: 9001,
+                path: "/api/frequency/" + nameEscaped,
+                method: 'post',
+                headers: {
+                        "content-type": "application/json",
+                    }
                     
-        var options = {
-            hostname: '127.0.0.1',
-            port: 9001,
-            path: "/api/frequency/" + nameEscaped,
-            method: 'post',
-            headers: {
-                    "content-type": "application/json",
-                }
-                
-        };
-        var req = http.request(options, function(res) {
-//            console.log('Status: ' + res.statusCode);
-//            console.log('Headers: ' + JSON.stringify(res.headers));
-            res.setEncoding('utf8');
-            res.on('data', function (body) {
-                //console.log('Body: ' + body); 
-                self.writeWordsCount++;
+            };
+            var req = http.request(options, function(res) {
+    //            console.log('Status: ' + res.statusCode);
+    //            console.log('Headers: ' + JSON.stringify(res.headers));
+                res.setEncoding('utf8');
+                res.on('data', function (body) {
+                    //console.log('Body: ' + body); 
+                    resolve();
+                });
             });
+            req.on('error', function(e) {
+                console.log('problem with request: ' + e.message);
+                reject(e);
+            });
+            req.write('{ "freq" : '+freq+' }');
+            req.end();
         });
-        req.on('error', function(e) {
-            console.log('problem with request: ' + e.message);
-        });
-        req.write('{ "freq" : '+freq+' }');
-        req.end();
     }
 
-    waitSub() {
-        await this.teachSub(() => {
-            this.waitSub();
-        });
-        if (this.writeWordsCount >= this.readWordsCount) {
-            this.promises.resolve();
+    async teachSub(wordObjs) {
+        try {
+            for (let obj of wordObjs) {
+                if (obj == null || obj.word === undefined) continue;
+                await this.createWordFrequency(obj.word,obj.freq);
+                console.log((this.writeWordsCount)+" > "+obj.word);
+                this.writeWordsCount++;
+            }
+        } catch (e) {
+            console.error(e);
         }
     }
 
-    async teachSub(callback) {
-        for(var i = 0; i < 100; i++) {
-            var obj = this.wordObjs[this.readWordsCount++];
-            console.log((this.writeWordsCount+i)+">"+obj.word);
-            await this.createWordFrequency(obj.word,obj.freq);
-        };
-        callback();
-    }
-
     setup() {
-        var self = this;
+        const self = this;
+        const wordObjs = [];
         console.log('Starting WordFreq simple teaching program...');
   
         console.log('Reading wordfreq corpus...');
@@ -83,21 +79,26 @@ class WordFreqCorpSensei60k {
             const freq = split[3];
             const frequency = freq / maxFreq;
             var obj = {word: word, freq: frequency}
-            self.wordObjs.push(obj);
+            wordObjs.push(obj);
             self.wordsCount++;
         });
         console.log('Done, count: ' + self.wordsCount);
-
+        return wordObjs;
     }
 
     teach() {
-        this.setup();
-        console.log('Completed teaching word frequencies setup.');
-            
-        this.teachSub()
-        console.log('Completed teaching word frequencies setup.');
-        
-        return self.promises;
+        this.promises = Q.fcall(() => { 
+            try {
+                const wordObjs = this.setup();
+                console.log('Completed teaching word frequencies setup.');
+                        
+                this.teachSub(wordObjs);
+                console.log('Completed teaching word frequencies.'); 
+            } catch (e) {
+                console.error(e);
+            }
+        }); 
+        return this.promises;
     }
 
 }

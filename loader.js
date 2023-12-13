@@ -41,14 +41,10 @@ senseisConstructorMap['EdgeGloveFuncSensei'] = EdgeGloveFuncSensei.EdgeGloveFunc
 senseisConstructorMap['EdgeGloveCorpSensei'] = EdgeGloveCorpSensei.EdgeGloveCorpSensei;
 senseisConstructorMap['SpacySensei'] = SpacySensei.SpacySensei;
 
-// API Client Service needed by all Senseis
-var ApiClientService = Object.create(Services.Service);
-ApiClientService.service = new ApiClient.ApiClient("http://127.0.0.1:9001");
-ApiClientService.isUsable = function() {
-  return Q.nbind(this.service.healthCheck, this.service);
-};
-Services.register('ApiClient', ApiClientService);
+const senseiServices = {};
 
+// API Client Service needed by all Senseis
+const apiClient = new ApiClient.ApiClient("http://127.0.0.1:9001");
 
 // order in which to run Senseis
 var senseis = [];
@@ -70,8 +66,7 @@ if (process.argv.length > 2) {
 		'NativeSensei', 
 		'GrammarSensei', 
 		'DataTypeSensei',  
-		'TwitterSensei', 
-		'OpenAiSensei', 
+		'TwitterSensei',
 	];
 }
 var args;
@@ -86,57 +81,31 @@ for (const senseiNameIndex in senseis) {
 	const senseiName = senseis[senseiNameIndex];
 	var service = Object.create(Services.Service);
 	var senseiConstructor = senseisConstructorMap[senseiName];
-	service.onStart = function() {
-		return Services.ready('ApiClient').spread((apiClient) => {
-			service.service = new senseiConstructor(apiClient.service);
-		});
-	}
-	service.isUsable = function() {
-		return (Services.ready('ApiClient'));
-	};
-	Services.register(senseiName, service);
+	senseiServices[senseiName] = new senseiConstructor(apiClient);
 }
 
-// Initialization
-Services.start();
 
 async function startUp() {
-	var promise = {
-		chain: Q()
-	};
-
+  var promise = Q();
+  var self = this;
   // add a service's teach promise chain to the main one
   // if error occurs, delay and try again
-	var startService = function (serviceName, promise) {
-		return promise.chain = promise.chain.then(() => {
-			console.log("========= Starting Sensei Service '" + serviceName + "'... =========")
-		}).then(() => {
-			try {
-				var readyServices = Services.ready(serviceName);
-				return readyServices.spread(
-					async (senseiService) => {
-		        		return await senseiService.service.teach(args);
-					}, () => {
-						console.log('.');
-					})
-					.then(() => {
-						console.log("========= Sensei Service '" + serviceName + "' finished. =========")
-					})
-			} catch (reason) {
-				console.error("Couldn't load service, Reason: " + reason);
-				setTimeout(startService, 500, serviceName, promise);
-			}
-		});
+	var startService = async function (serviceName) {
+		try {
+			console.log("========= Starting Sensei Service '" + serviceName + "'... =========");
+			const senseiService = senseiServices[serviceName];
+			await senseiService.teach(args);
+			console.log("========= Sensei Service '" + serviceName + "' finished. =========");
+		} catch (reason) {
+			console.error("Couldn't load service, Reason: " + reason);
+		}
 	}
 
-  // iterate through services array and attempt to create teaching promise chain
-  // and add it to the main promise chain
 	senseis.forEach(async (senseiName) => {
-		promise = startService(senseiName, promise);
+		await startService(senseiName);
 	});
-	promise.then(() => {
-		process.exit();
-	});
+
+//	process.exit();
 }
 
 startUp();
