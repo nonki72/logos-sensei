@@ -10,7 +10,7 @@ module.exports = {
           "GCLOUD_PROJECT": "logos-162301",
           "CLOUD_BUCKET": "logos-162301",
           "MYSQL_USER":"logos",
-          "MYSQL_PASSWORD":"sparkle8twilight",
+          "MYSQL_PASSWORD":"<password>",
           "MYSQL_DATABASE":"logos",
           "MYSQL_HOST":"localhost"
         }
