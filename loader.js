@@ -20,6 +20,8 @@ const Gpt4AllSensei = require('./src/sensei/gpt4all');
 const EdgeGloveFuncSensei = require('./src/sensei/edgeglovefunc');
 const EdgeGloveCorpSensei = require('./src/sensei/edgeglovecorp');
 const SpacySensei = require('./src/sensei/spacy');
+const Word2VecSensei = require('./src/sensei/word2vec');
+
 
 // Mapping of names to Senseis
 const senseisConstructorMap = {}
@@ -40,6 +42,7 @@ senseisConstructorMap['Gpt4AllSensei'] = Gpt4AllSensei.Gpt4AllSensei;
 senseisConstructorMap['EdgeGloveFuncSensei'] = EdgeGloveFuncSensei.EdgeGloveFuncSensei;
 senseisConstructorMap['EdgeGloveCorpSensei'] = EdgeGloveCorpSensei.EdgeGloveCorpSensei;
 senseisConstructorMap['SpacySensei'] = SpacySensei.SpacySensei;
+senseisConstructorMap['Word2VecSensei'] = Word2VecSensei.Word2VecSensei;
 
 const senseiServices = {};
 
@@ -53,7 +56,8 @@ if (process.argv.length > 2) {
 	const senseiNames = Object.keys(senseisConstructorMap);
     const indexOfArgSensei = senseiNames.indexOf(process.argv[2]);
 	if (indexOfArgSensei == -1) {
-		console.error("Sensei name " + process.argv[2] + " not found! Use name type 'ExampleSensei'.");
+		console.error("Sensei name " + process.argv[2] + " not found! Use name type 'ExampleSensei'.\n" +
+		    " Available Senseis:\n" + Object.keys(senseisConstructorMap).join("\n"));
 		process.exit(1);
 	}
 	const senseiName = senseiNames[indexOfArgSensei];
@@ -67,6 +71,11 @@ if (process.argv.length > 2) {
 		'GrammarSensei', 
 		'DataTypeSensei',  
 		'TwitterSensei',
+		'Gpt4AllSensei',
+		'HatsuneMikuSensei',
+		'EdgeGloveFuncSensei',
+		'WordFreqFuncSensei',
+		'Word2VecSensei'
 	];
 }
 var args;
